@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,18 +19,45 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex relative overflow-hidden">
+      {/* Corner Decorations */}
+      <img 
+        src="/corner-decoration.svg" 
+        alt="Corner decoration" 
+        className="absolute top-0 left-0 w-[150px] h-[150px] opacity-70"
+      />
+      <img 
+        src="/corner-decoration.svg" 
+        alt="Corner decoration" 
+        className="absolute top-0 right-0 w-[150px] h-[150px] opacity-70 rotate-90"
+      />
+      <img 
+        src="/corner-decoration.svg" 
+        alt="Corner decoration" 
+        className="absolute bottom-0 left-0 w-[150px] h-[150px] opacity-70 -rotate-90"
+      />
+      <img 
+        src="/corner-decoration.svg" 
+        alt="Corner decoration" 
+        className="absolute bottom-0 right-0 w-[150px] h-[150px] opacity-70 rotate-180"
+      />
+
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center p-6 bg-white lg:p-8">
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-              <div className="w-4 h-4 bg-white rounded-full"></div>
+            <div
+                className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                   className="lucide lucide-trending-up w-5 h-5 text-white" aria-hidden="true">
+                <path d="M16 7h6v6"></path>
+                <path d="m22 7-8.5 8.5-5-5L2 17"></path>
+              </svg>
             </div>
-            <span className="text-xl font-semibold text-gray-900">.Finance</span>
+            <span className="text-xl font-semibold text-gray-900">ForexFX</span>
           </div>
-
           {/* Header */}
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-gray-900">Welcome Back!</h1>
@@ -150,45 +177,6 @@ export default function LoginPage() {
               </span>
             </div>
           </form>
-        </div>
-      </div>
-
-      {/* Right Side - Illustration */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-purple-500 via-blue-600 to-green-400 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-        
-        {/* Geometric shapes */}
-        <div className="absolute top-20 right-20 w-16 h-16 bg-yellow-400 transform rotate-45"></div>
-        <div className="absolute bottom-32 left-16 w-20 h-20 bg-green-400 rounded-full"></div>
-        <div className="absolute top-1/3 left-20 w-8 h-8 bg-purple-300 transform rotate-12"></div>
-        
-        {/* Main content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center text-white p-12">
-          {/* Character illustration placeholder */}
-          <div className="mb-8">
-            <div className="w-64 h-64 bg-white bg-opacity-20 rounded-3xl flex items-center justify-center backdrop-blur-sm">
-              <div className="w-32 h-32 bg-white bg-opacity-30 rounded-2xl flex items-center justify-center">
-                <div className="w-16 h-16 bg-blue-200 rounded-xl flex items-center justify-center">
-                  <div className="w-8 h-8 bg-gray-600 rounded-lg"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <h2 className="text-4xl font-bold mb-4">
-            Manage your Money Anywhere
-          </h2>
-          <p className="text-lg text-white text-opacity-90 max-w-md">
-            you can Manage your Money on the go with Quicken on the web
-          </p>
-          
-          {/* Pagination dots */}
-          <div className="flex space-x-2 mt-12">
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-            <div className="w-2 h-2 bg-white bg-opacity-50 rounded-full"></div>
-            <div className="w-2 h-2 bg-white bg-opacity-50 rounded-full"></div>
-            <div className="w-2 h-2 bg-white bg-opacity-50 rounded-full"></div>
-          </div>
         </div>
       </div>
     </div>
