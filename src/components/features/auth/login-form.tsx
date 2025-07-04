@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
@@ -9,8 +10,8 @@ import { Divider } from '@/components/ui/divider'
 import { GoogleButton } from './google-button'
 import { SignUpLink } from './signup-link'
 import { ForgotPasswordLink } from './forgot-password-link'
-import { LoginApiRequest, LoginApiResponse, LoginFormData, LoginFormErrors } from '@/types/login'
-
+import { LoginFormData, LoginFormErrors } from '@/types/login'
+import { useAuth } from '@/hooks/useAuth'
 
 interface LoginFormProps {
     onSuccess?: (user: any, token?: string) => void
@@ -30,14 +31,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState('')
 
-    // Router handling (same pattern as signup)
-    let router: any = null
-    try {
-        const { useRouter } = require('next/router')
-        router = useRouter()
-    } catch (error) {
-        console.log('Router not available, redirect will be handled via window.location')
-    }
+    // Use the auth hook and router
+    const { login } = useAuth()
+    const router = useRouter()
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -79,13 +75,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
     const handleRedirect = () => {
         if (redirectOnSuccess) {
-            if (router) {
-                router.push('/dashboard')
-            } else {
-                if (typeof window !== 'undefined') {
-                    window.location.href = '/dashboard'
-                }
-            }
+            router.push('/dashboard')
         }
     }
 
@@ -100,23 +90,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         setErrors({})
 
         try {
-            const apiData: LoginApiRequest = {
-                email: formData.email,
-                password: formData.password
-            }
+            // Use the login function from useAuth hook
+            const success = await login(formData.email, formData.password)
 
-            // Make API call
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(apiData)
-            })
-
-            const data: LoginApiResponse = await response.json()
-
-            if (data.success) {
+            if (success) {
                 setSuccess('Login successful! Redirecting...')
 
                 // Clear form
@@ -126,13 +103,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 })
 
                 // Call success callback if provided
-                if (onSuccess && data.user) {
-                    onSuccess(data.user, data.token)
-                }
+                if (onSuccess) {
+                    // Get user data from localStorage since useAuth stores it there
+                    const userData = localStorage.getItem('auth_user')
+                    const token = localStorage.getItem('auth_token')
 
-                // Store token if provided
-                if (data.token && typeof window !== 'undefined') {
-                    localStorage.setItem('auth_token', data.token)
+                    if (userData && token) {
+                        onSuccess(JSON.parse(userData), token)
+                    }
                 }
 
                 // Redirect after 1 second
@@ -140,12 +118,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     handleRedirect()
                 }, 1000)
             } else {
-                // Handle API errors
-                if (data.errors && Array.isArray(data.errors)) {
-                    setErrors({ general: data.errors.join(', ') })
-                } else {
-                    setErrors({ general: data.message || 'Invalid email or password' })
-                }
+                setErrors({ general: 'Invalid email or password' })
             }
         } catch (error) {
             console.error('Login error:', error)

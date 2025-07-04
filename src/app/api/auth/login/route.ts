@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, validateEmail } from "@/lib/auth";
-import jwt from "jsonwebtoken";
+import { signToken } from "@/lib/jwt";
 
 interface LoginRequest {
   email: string;
@@ -23,7 +23,7 @@ interface LoginResponse {
 
 export async function POST(req: NextRequest) {
   try {
-    const body: LoginRequest = await req.json();
+    const body = await req.json();
     const { email, password } = body;
 
     // Input validation
@@ -63,22 +63,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (!user) {
+    if (!user || !user.isActive) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid email or password",
-        } as LoginResponse,
-        { status: 401 }
-      );
-    }
-
-    if (!user.isActive) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Account is deactivated. Please contact support.",
-        } as LoginResponse,
+        { success: false, message: "Invalid credentials" },
         { status: 401 }
       );
     }
@@ -88,23 +75,17 @@ export async function POST(req: NextRequest) {
 
     if (!isValidPassword) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid email or password",
-        } as LoginResponse,
+        { success: false, message: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-      },
-      process.env.JWT_SECRET || "your-secret-key",
-      { expiresIn: "7d" }
-    );
+    // Generate JWT token using utility
+    const token = signToken({
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    });
 
     // Return success response
     return NextResponse.json(
@@ -118,17 +99,13 @@ export async function POST(req: NextRequest) {
           name: user.name,
         },
         token,
-      } as LoginResponse,
+      },
       { status: 200 }
     );
   } catch (error: any) {
     console.error("Login error:", error);
-
     return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error. Please try again later.",
-      } as LoginResponse,
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }
