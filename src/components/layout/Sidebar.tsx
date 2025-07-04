@@ -16,6 +16,7 @@ import {
     Settings,
     LogOut
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SidebarProps {
     className?: string;
@@ -50,6 +51,7 @@ const navigation = [
 ];
 
 export function Sidebar({ className }: SidebarProps) {
+    const { user } = useAuth()
     const pathname = usePathname();
 
     return (
@@ -95,10 +97,10 @@ export function Sidebar({ className }: SidebarProps) {
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                            John Doe
+                            {user?.name || 'Hamza'}
                         </p>
                         <p className="text-xs text-gray-500 truncate">
-                            john@example.com
+                            {user?.email || 'abc@gmail.com'}
                         </p>
                     </div>
                 </div>
