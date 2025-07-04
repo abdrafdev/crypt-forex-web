@@ -14,8 +14,8 @@ import { SignupFormData, SignupFormErrors, SignupApiRequest, SignupApiResponse }
 import { generateUsername } from '@/lib/username'
 
 interface SignupFormProps {
-    onSuccess?: (user: any) => void 
-    redirectOnSuccess?: boolean     
+    onSuccess?: (user: any) => void
+    redirectOnSuccess?: boolean
 }
 
 export const SignupForm: React.FC<SignupFormProps> = ({
