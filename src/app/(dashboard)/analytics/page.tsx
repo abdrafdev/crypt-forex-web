@@ -1,7 +1,7 @@
 'use client';
 
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { CryptoBubbles, MarketList } from '@/components/features/crypto-bubbles/CryptoBubbles';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { CryptoBubbles, MarketList } from '@/components/features/crypto-bubbles/crypto-bubbles';
 import { CryptoBubbleData } from '@/types';
 
 // Mock data for the crypto bubbles

@@ -1,7 +1,7 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/features/auth/protected-route';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function DashboardPage() {
@@ -340,7 +340,7 @@ export default function DashboardPage() {
                                 ].map((news, index) => (
                                     <div key={index} className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded transition-colors">
                                         <div className={`w-2 h-2 rounded-full mt-2 ${news.impact === 'high' ? 'bg-red-500' :
-                                                news.impact === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                                            news.impact === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
                                             }`}></div>
                                         <div className="flex-1">
                                             <p className="text-sm font-medium text-gray-900">{news.title}</p>

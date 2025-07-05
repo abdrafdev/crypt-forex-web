@@ -10,8 +10,8 @@ import { TermsCheckbox } from './terms-checkbox'
 import { Divider } from '@/components/ui/divider'
 import { GoogleButton } from './google-button'
 import { SignInLink } from './signin-link'
-import { SignupFormData, SignupFormErrors, SignupApiRequest, SignupApiResponse } from '@/types'
 import { generateUsername } from '@/lib/username'
+import { SignupApiRequest, SignupApiResponse, SignupFormData, SignupFormErrors } from '@/types/signup'
 
 interface SignupFormProps {
     onSuccess?: (user: any) => void
@@ -139,7 +139,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({
                 email: formData.email,
                 username: username,
                 password: formData.password,
-                name: fullName
+                name: fullName,
+                firstName: formData.firstName,
+                lastName: formData.lastName
             }
 
             // Make API call

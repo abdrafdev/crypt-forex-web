@@ -1,7 +1,7 @@
 'use client';
 
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { DepositForm, DepositHistory } from '@/components/features/deposits/DepositForm';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { DepositForm, DepositHistory } from '@/components/features/deposits/deposit-form';
 
 // Mock data - in production this would come from your API
 const mockDeposits = [
