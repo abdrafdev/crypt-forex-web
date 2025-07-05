@@ -235,11 +235,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <Divider text="or continue" />
 
             {/* Google Sign In */}
-            <GoogleButton
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                text="Log in with Google"
-            />
+            <GoogleButton callbackUrl="/dashboard" />
 
             {/* Sign Up Link */}
             <SignUpLink />

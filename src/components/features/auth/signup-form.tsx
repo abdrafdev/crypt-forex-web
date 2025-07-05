@@ -362,8 +362,8 @@ export const SignupForm: React.FC<SignupFormProps> = ({
             <Divider text="or continue" />
 
             {/* Google Sign Up */}
-            <GoogleButton onClick={handleGoogleSignup} disabled={loading} />
-
+            <GoogleButton text="Sign up with Google" callbackUrl="/dashboard" />
+            
             {/* Sign In Link */}
             <SignInLink />
         </form>
