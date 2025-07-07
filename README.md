@@ -150,7 +150,7 @@ npm run lint      # Run ESLint
 
 ## 📈 Future Enhancements
 
-- [ ] User authentication system
+- [ ] User authentication system.
 - [ ] Wallet integration (MetaMask, WalletConnect)
 - [ ] Real banking/crypto deposit integration
 - [ ] Smart contract deployment
