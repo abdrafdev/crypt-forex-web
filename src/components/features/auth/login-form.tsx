@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
@@ -30,10 +30,30 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     const [errors, setErrors] = useState<LoginFormErrors>({})
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState('')
+    const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null)
 
     // Use the auth hook and router
     const { login } = useAuth()
     const router = useRouter()
+    const searchParams = useSearchParams()
+
+    // Check for query parameters
+    useEffect(() => {
+        const verified = searchParams.get('verified')
+        const reset = searchParams.get('reset')
+
+        if (verified === 'true') {
+            setStatusMessage({
+                type: 'success',
+                message: 'Your email has been verified successfully! You can now log in.'
+            })
+        } else if (reset === 'true') {
+            setStatusMessage({
+                type: 'success',
+                message: 'Your password has been reset successfully! You can now log in with your new password.'
+            })
+        }
+    }, [searchParams])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -136,6 +156,28 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Status Message */}
+            {statusMessage && (
+                <div className={`p-4 ${statusMessage.type === 'success' ? 'bg-green-50 border-l-4 border-green-400 text-green-700' : 'bg-red-50 border-l-4 border-red-400 text-red-700'} rounded-r-lg`}>
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            {statusMessage.type === 'success' ? (
+                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                            ) : (
+                                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                            )}
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm">{statusMessage.message}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Success Message */}
             {success && (
                 <div className="p-4 bg-green-50 border-l-4 border-green-400 text-green-700 rounded-r-lg">

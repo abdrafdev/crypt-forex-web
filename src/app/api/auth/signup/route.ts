@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,6 +18,11 @@ export async function POST(req: NextRequest) {
     const { hashPassword, validateEmail, validatePassword, validateUsername } =
       await import("@/lib/auth");
     console.log("✅ Auth utilities imported successfully");
+
+    // Import email utilities
+    console.log("🔄 Testing email utilities import...");
+    const { sendVerificationEmail } = await import("@/lib/email");
+    console.log("✅ Email utilities imported successfully");
 
     const { email, username, password, name } = body;
 
@@ -113,11 +119,32 @@ export async function POST(req: NextRequest) {
 
     console.log("✅ User created successfully:", newUser.id);
 
+    // Generate verification token
+    console.log("🔄 Generating verification token...");
+    const token = randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Store verification token
+    await prisma.verificationToken.create({
+      data: {
+        identifier: newUser.email,
+        token,
+        expires,
+      },
+    });
+    console.log("✅ Verification token created successfully");
+
+    // Send verification email
+    console.log("🔄 Sending verification email...");
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    await sendVerificationEmail(newUser.email, token, baseUrl);
+    console.log("✅ Verification email sent successfully");
+
     // Return success response
     return NextResponse.json(
       {
         success: true,
-        message: "Account created successfully! Welcome to CryptoForex.",
+        message: "Account created successfully! Please check your email to verify your account.",
         user: {
           ...newUser,
           createdAt: newUser.createdAt.toISOString(),

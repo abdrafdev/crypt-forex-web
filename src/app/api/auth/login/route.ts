@@ -1,3 +1,124 @@
+// import { NextRequest, NextResponse } from "next/server";
+// import { prisma } from "@/lib/prisma";
+// import { verifyPassword, validateEmail } from "@/lib/auth";
+// import { signToken } from "@/lib/jwt";
+//
+// interface LoginRequest {
+//   email: string;
+//   password: string;
+// }
+//
+// interface LoginResponse {
+//   success: boolean;
+//   message: string;
+//   user?: {
+//     id: string;
+//     email: string;
+//     username: string;
+//     name: string | null;
+//   };
+//   token?: string;
+//   errors?: string[];
+// }
+//
+// export async function POST(req: NextRequest) {
+//   try {
+//     const body = await req.json();
+//     const { email, password } = body;
+//
+//     // Input validation
+//     const errors: string[] = [];
+//
+//     if (!email || !password) {
+//       errors.push("Email and password are required");
+//     }
+//
+//     if (email && !validateEmail(email)) {
+//       errors.push("Invalid email format");
+//     }
+//
+//     if (errors.length > 0) {
+//       return NextResponse.json(
+//         {
+//           success: false,
+//           message: "Validation failed",
+//           errors,
+//         } as LoginResponse,
+//         { status: 400 }
+//       );
+//     }
+//
+//     // Find user by email
+//     const user = await prisma.user.findUnique({
+//       where: {
+//         email: email.toLowerCase().trim(),
+//       },
+//       select: {
+//         id: true,
+//         email: true,
+//         username: true,
+//         name: true,
+//         password: true,
+//         isActive: true,
+//       },
+//     });
+//
+//     if (!user || !user.isActive) {
+//       return NextResponse.json(
+//         { success: false, message: "Invalid credentials" },
+//         { status: 401 }
+//       );
+//     }
+//
+//     // Verify password
+//     const isValidPassword = await verifyPassword(password, user.password);
+//
+//     if (!isValidPassword) {
+//       return NextResponse.json(
+//         { success: false, message: "Invalid credentials" },
+//         { status: 401 }
+//       );
+//     }
+//
+//     // Generate JWT token using utility
+//     const token = signToken({
+//       userId: user.id,
+//       email: user.email,
+//       username: user.username,
+//     });
+//
+//     // Return success response
+//     return NextResponse.json(
+//       {
+//         success: true,
+//         message: "Login successful",
+//         user: {
+//           id: user.id,
+//           email: user.email,
+//           username: user.username,
+//           name: user.name,
+//         },
+//         token,
+//       },
+//       { status: 200 }
+//     );
+//   } catch (error: any) {
+//     console.error("Login error:", error);
+//     return NextResponse.json(
+//       { success: false, message: "Internal server error" },
+//       { status: 500 }
+//     );
+//   }
+// }
+//
+// export async function GET() {
+//   return NextResponse.json(
+//     { message: "Login API is running. Use POST method." },
+//     { status: 200 }
+//   );
+// }
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, validateEmail } from "@/lib/auth";
@@ -39,12 +160,12 @@ export async function POST(req: NextRequest) {
 
     if (errors.length > 0) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Validation failed",
-          errors,
-        } as LoginResponse,
-        { status: 400 }
+          {
+            success: false,
+            message: "Validation failed",
+            errors,
+          } as LoginResponse,
+          { status: 400 }
       );
     }
 
@@ -60,13 +181,25 @@ export async function POST(req: NextRequest) {
         name: true,
         password: true,
         isActive: true,
+        emailVerified: true, // Add this field to the selection
       },
     });
 
     if (!user || !user.isActive) {
       return NextResponse.json(
-        { success: false, message: "Invalid credentials" },
-        { status: 401 }
+          { success: false, message: "Invalid credentials" },
+          { status: 401 }
+      );
+    }
+
+    // Check if email is verified
+    if (!user.emailVerified) {
+      return NextResponse.json(
+          {
+            success: false,
+            message: "Please verify your email address before logging in"
+          },
+          { status: 403 }
       );
     }
 
@@ -75,8 +208,8 @@ export async function POST(req: NextRequest) {
 
     if (!isValidPassword) {
       return NextResponse.json(
-        { success: false, message: "Invalid credentials" },
-        { status: 401 }
+          { success: false, message: "Invalid credentials" },
+          { status: 401 }
       );
     }
 
@@ -89,31 +222,31 @@ export async function POST(req: NextRequest) {
 
     // Return success response
     return NextResponse.json(
-      {
-        success: true,
-        message: "Login successful",
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          name: user.name,
+        {
+          success: true,
+          message: "Login successful",
+          user: {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            name: user.name,
+          },
+          token,
         },
-        token,
-      },
-      { status: 200 }
+        { status: 200 }
     );
   } catch (error: any) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
-      { status: 500 }
+        { success: false, message: "Internal server error" },
+        { status: 500 }
     );
   }
 }
 
 export async function GET() {
   return NextResponse.json(
-    { message: "Login API is running. Use POST method." },
-    { status: 200 }
+      { message: "Login API is running. Use POST method." },
+      { status: 200 }
   );
 }
