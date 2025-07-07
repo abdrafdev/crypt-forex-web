@@ -55,7 +55,7 @@ export function Sidebar({ className }: SidebarProps) {
     const pathname = usePathname();
 
     return (
-        <div className={cn('flex flex-col w-64 bg-white border-r border-gray-200', className)}>
+        <div className={cn('flex flex-col w-64 h-screen bg-white border-r border-gray-200', className)}>
             {/* Logo */}
             <div className="flex items-center h-16 px-6 border-b border-gray-200">
                 <Link href="/dashboard" className="flex items-center space-x-2">
