@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,10 +18,10 @@ interface LoginFormProps {
     redirectOnSuccess?: boolean
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({
+function LoginFormContent({
     onSuccess,
     redirectOnSuccess = true
-}) => {
+}: LoginFormProps) {
     const [formData, setFormData] = useState<LoginFormData>({
         email: '',
         password: ''
@@ -283,4 +283,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <SignUpLink />
         </form>
     )
+}
+
+export const LoginForm: React.FC<LoginFormProps> = (props) => {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginFormContent {...props} />
+        </Suspense>
+    );
 }

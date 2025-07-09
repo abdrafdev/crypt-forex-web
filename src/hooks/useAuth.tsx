@@ -58,7 +58,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
             id: session.user.id || session.user.email!.split("@")[0],
             email: session.user.email!,
             username: session.user.username || session.user.email!.split('@')[0],
-            name: session.user.name || null
+            name: session.user.name || null,
+            firstName: session.user.firstName || null,
+            lastName: session.user.lastName || null,
+            image: session.user.image || null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           };
           setUser(nextAuthUser);
 

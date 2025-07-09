@@ -1,20 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 import { PasswordInput } from '@/components/ui/password-input';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string; general?: string; token?: string }>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -32,39 +32,39 @@ export default function ResetPasswordPage() {
     if (!password) {
       return { valid: false, message: 'Password is required' };
     }
-    
+
     if (password.length < 8) {
       return { valid: false, message: 'Password must be at least 8 characters' };
     }
-    
+
     if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
       return { valid: false, message: 'Password must contain uppercase, lowercase, and number' };
     }
-    
+
     return { valid: true };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Reset errors
     setErrors({});
-    
+
     // Validate password
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
       setErrors({ password: passwordValidation.message });
       return;
     }
-    
+
     // Validate confirm password
     if (password !== confirmPassword) {
       setErrors({ confirmPassword: 'Passwords do not match' });
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
@@ -73,14 +73,14 @@ export default function ResetPasswordPage() {
         },
         body: JSON.stringify({ token, password }),
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         setSuccess(true);
         setPassword('');
         setConfirmPassword('');
-        
+
         // Redirect to login page after 3 seconds
         setTimeout(() => {
           router.push('/login?reset=true');
@@ -107,7 +107,7 @@ export default function ResetPasswordPage() {
             Enter your new password below
           </p>
         </div>
-        
+
         {errors.token ? (
           <div className="rounded-md bg-red-50 p-4">
             <div className="flex">
@@ -175,7 +175,7 @@ export default function ResetPasswordPage() {
                 </div>
               </div>
             )}
-            
+
             <div className="space-y-4">
               {/* Password Field */}
               <FormField
@@ -236,7 +236,7 @@ export default function ResetPasswordPage() {
                 )}
               </Button>
             </div>
-            
+
             <div className="text-center">
               <Link
                 href="/login"
@@ -249,5 +249,13 @@ export default function ResetPasswordPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

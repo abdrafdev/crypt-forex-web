@@ -1,12 +1,14 @@
 // Core platform types
 
-
-
-
 export interface User {
   id: string;
   email: string;
-  name: string;
+  name?: string | null;
+  username?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  image?: string | null;
+  avatar?: string | null;
   walletAddress?: string;
   createdAt: Date;
   updatedAt: Date;
