@@ -2,127 +2,40 @@
 
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { CryptoBubbles, MarketList } from '@/components/features/crypto-bubbles/crypto-bubbles';
-import { CryptoBubbleData } from '@/types';
-
-// Mock data for the crypto bubbles
-const mockBubbleData: CryptoBubbleData[] = [
-    {
-        id: '1',
-        symbol: 'USDfx',
-        name: 'USD Stablecoin',
-        marketCap: 50000000,
-        priceChange24h: 0.05,
-        volume24h: 2500000,
-        category: 'stablecoin',
-        color: '#3b82f6',
-        size: 80,
-    },
-    {
-        id: '2',
-        symbol: 'EURfx',
-        name: 'EUR Stablecoin',
-        marketCap: 35000000,
-        priceChange24h: -0.12,
-        volume24h: 1800000,
-        category: 'stablecoin',
-        color: '#3b82f6',
-        size: 65,
-    },
-    {
-        id: '3',
-        symbol: 'USDEURfx',
-        name: 'USD-EUR Forex Pair',
-        marketCap: 25000000,
-        priceChange24h: 0.25,
-        volume24h: 3200000,
-        category: 'forex-pair',
-        color: '#8b5cf6',
-        size: 55,
-    },
-    {
-        id: '4',
-        symbol: 'JPYfx',
-        name: 'JPY Stablecoin',
-        marketCap: 20000000,
-        priceChange24h: -0.08,
-        volume24h: 1200000,
-        category: 'stablecoin',
-        color: '#3b82f6',
-        size: 45,
-    },
-    {
-        id: '5',
-        symbol: 'GBPfx',
-        name: 'GBP Stablecoin',
-        marketCap: 18000000,
-        priceChange24h: 0.15,
-        volume24h: 950000,
-        category: 'stablecoin',
-        color: '#3b82f6',
-        size: 42,
-    },
-    {
-        id: '6',
-        symbol: 'JPYGBPfx',
-        name: 'JPY-GBP Forex Pair',
-        marketCap: 15000000,
-        priceChange24h: -0.32,
-        volume24h: 1800000,
-        category: 'forex-pair',
-        color: '#8b5cf6',
-        size: 38,
-    },
-    {
-        id: '7',
-        symbol: 'CHFfx',
-        name: 'CHF Stablecoin',
-        marketCap: 12000000,
-        priceChange24h: 0.08,
-        volume24h: 650000,
-        category: 'stablecoin',
-        color: '#3b82f6',
-        size: 35,
-    },
-    {
-        id: '8',
-        symbol: 'USDJPYfx',
-        name: 'USD-JPY Forex Pair',
-        marketCap: 22000000,
-        priceChange24h: 0.18,
-        volume24h: 2800000,
-        category: 'forex-pair',
-        color: '#8b5cf6',
-        size: 50,
-    },
-    {
-        id: '9',
-        symbol: 'EURGBPfx',
-        name: 'EUR-GBP Forex Pair',
-        marketCap: 18000000,
-        priceChange24h: -0.15,
-        volume24h: 2100000,
-        category: 'forex-pair',
-        color: '#8b5cf6',
-        size: 42,
-    },
-    {
-        id: '10',
-        symbol: 'CADfx',
-        name: 'CAD Stablecoin',
-        marketCap: 8000000,
-        priceChange24h: 0.22,
-        volume24h: 420000,
-        category: 'stablecoin',
-        color: '#3b82f6',
-        size: 28,
-    },
-];
+import { LoadingState } from '@/components/ui/loading-state';
+import { ErrorState } from '@/components/ui/error-state';
+import { useCryptoData } from '@/hooks/useCryptoData';
 
 export default function AnalyticsPage() {
-    const totalMarketCap = mockBubbleData.reduce((sum, item) => sum + item.marketCap, 0);
-    const totalVolume = mockBubbleData.reduce((sum, item) => sum + item.volume24h, 0);
-    const gainers = mockBubbleData.filter(item => item.priceChange24h > 0).length;
-    const losers = mockBubbleData.filter(item => item.priceChange24h < 0).length;
+    // Use the custom hook to fetch data
+    const {
+        bubbleData,
+        totalMarketCap,
+        totalVolume,
+        gainers,
+        losers,
+        isLoading,
+        error,
+        refresh
+    } = useCryptoData(10); // Fetch top 10 cryptos
+
+    // Handle loading state
+    if (isLoading) {
+        return (
+            <DashboardLayout>
+                <LoadingState />
+            </DashboardLayout>
+        );
+    }
+
+    // Handle error state
+    if (error) {
+        return (
+            <DashboardLayout>
+                <ErrorState message={error} onRetry={refresh} />
+            </DashboardLayout>
+        );
+    }
 
     return (
         <DashboardLayout>
@@ -150,7 +63,7 @@ export default function AnalyticsPage() {
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 truncate">Total Market Cap</dt>
                                     <dd className="text-lg font-medium text-gray-900">
-                                        ${(totalMarketCap / 1000000).toFixed(1)}M
+                                        ${(totalMarketCap / 1000000000).toFixed(1)}B
                                     </dd>
                                 </dl>
                             </div>
@@ -170,7 +83,7 @@ export default function AnalyticsPage() {
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 truncate">24h Volume</dt>
                                     <dd className="text-lg font-medium text-gray-900">
-                                        ${(totalVolume / 1000000).toFixed(1)}M
+                                        ${(totalVolume / 1000000000).toFixed(1)}B
                                     </dd>
                                 </dl>
                             </div>
@@ -217,10 +130,10 @@ export default function AnalyticsPage() {
                 {/* Crypto Bubbles Visualization */}
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     <div className="xl:col-span-2">
-                        <CryptoBubbles data={mockBubbleData} width={800} height={500} />
+                        <CryptoBubbles data={bubbleData} width={800} height={500} />
                     </div>
                     <div className="xl:col-span-1">
-                        <MarketList data={mockBubbleData} />
+                        <MarketList data={bubbleData} />
                     </div>
                 </div>
 
@@ -232,35 +145,35 @@ export default function AnalyticsPage() {
                             <div className="flex justify-between">
                                 <span className="text-blue-700">Stablecoins:</span>
                                 <span className="font-medium text-blue-900">
-                                    {mockBubbleData.filter(item => item.category === 'stablecoin').length} active
+                                    {bubbleData.filter(item => item.category === 'stablecoin').length} active
                                 </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-blue-700">Forex Pairs:</span>
                                 <span className="font-medium text-blue-900">
-                                    {mockBubbleData.filter(item => item.category === 'forex-pair').length} active
+                                    {bubbleData.filter(item => item.category === 'forex-pair').length} active
                                 </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-blue-700">Avg. Performance:</span>
-                                <span className="font-medium text-blue-900">
-                                    {(mockBubbleData.reduce((sum, item) => sum + item.priceChange24h, 0) / mockBubbleData.length).toFixed(2)}%
+                                <span className={`font-medium ${getColorClass(bubbleData.reduce((sum, item) => sum + item.priceChange24h, 0) / bubbleData.length)}`}>
+                                    {(bubbleData.reduce((sum, item) => sum + item.priceChange24h, 0) / bubbleData.length).toFixed(2)}%
                                 </span>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-                        <h3 className="text-lg font-semibold text-purple-900 mb-4">Platform Insights</h3>
+                        <h3 className="text-lg font-semibold text-purple-900 mb-4">Market Insights</h3>
                         <div className="space-y-3">
                             <p className="text-purple-700 text-sm">
-                                • Forex pairs are showing higher volatility than traditional stablecoins
+                                • {getMostVolatileCoin(bubbleData)} has the highest 24h volatility ({getHighestVolatility(bubbleData)}%)
                             </p>
                             <p className="text-purple-700 text-sm">
-                                • USD-based pairs dominate trading volume
+                                • Highest trading volume: {getHighestVolumeToken(bubbleData)} (${(getHighestVolume(bubbleData) / 1000000).toFixed(1)}M)
                             </p>
                             <p className="text-purple-700 text-sm">
-                                • Market correlation with traditional forex markets is strong
+                                • Data refreshed at: {new Date().toLocaleTimeString()}
                             </p>
                         </div>
                     </div>
@@ -268,4 +181,37 @@ export default function AnalyticsPage() {
             </div>
         </DashboardLayout>
     );
+}
+
+// Helper functions for displaying insights
+function getColorClass(value: number): string {
+    return value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-blue-900';
+}
+
+function getMostVolatileCoin(data: any[]): string {
+    if (!data.length) return 'N/A';
+    return data.reduce((prev, current) =>
+        Math.abs(prev.priceChange24h) > Math.abs(current.priceChange24h) ? prev : current
+    ).symbol;
+}
+
+function getHighestVolatility(data: any[]): number {
+    if (!data.length) return 0;
+    return Math.abs(data.reduce((prev, current) =>
+        Math.abs(prev.priceChange24h) > Math.abs(current.priceChange24h) ? prev : current
+    ).priceChange24h);
+}
+
+function getHighestVolumeToken(data: any[]): string {
+    if (!data.length) return 'N/A';
+    return data.reduce((prev, current) =>
+        prev.volume24h > current.volume24h ? prev : current
+    ).symbol;
+}
+
+function getHighestVolume(data: any[]): number {
+    if (!data.length) return 0;
+    return data.reduce((prev, current) =>
+        prev.volume24h > current.volume24h ? prev : current
+    ).volume24h;
 }

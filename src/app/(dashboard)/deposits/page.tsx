@@ -2,6 +2,9 @@
 
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { DepositForm, DepositHistory } from '@/components/features/deposits/deposit-form';
+import MetaMaskConnect from '@/components/metamask/meta-mask-connect';
+import { useState } from 'react';
+import USDDeposit from '@/components/metamask/USDD-deposit';
 
 // Mock data - in production this would come from your API
 const mockDeposits = [
@@ -32,6 +35,10 @@ const mockDeposits = [
 ];
 
 export default function DepositsPage() {
+    const [connectedAccount, setConnectedAccount] = useState('')
+    const CONTRACT_ADDRESS = "0x..." 
+
+
     const handleDepositSubmit = (data: { amount: number; currency: string; type: string; paymentMethod?: string }) => {
         console.log('Deposit data:', data);
         // Here you would call your API to create the deposit
@@ -41,6 +48,22 @@ export default function DepositsPage() {
     return (
         <DashboardLayout>
             <div className="max-w-6xl mx-auto space-y-8">
+
+                <div className="container mx-auto p-4">
+                    <h1 className="text-2xl font-bold mb-6">DApp USD Deposit</h1>
+
+                    <MetaMaskConnect onConnect={setConnectedAccount} />
+
+                    {connectedAccount && (
+                        <div className="mt-6">
+                            <USDDeposit
+                                connectedAccount={connectedAccount}
+                                contractAddress={CONTRACT_ADDRESS}
+                            />
+                        </div>
+                    )}
+                </div>
+
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Deposits</h1>
                     <p className="text-gray-600 mt-2">
