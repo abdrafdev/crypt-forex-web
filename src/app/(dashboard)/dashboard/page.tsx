@@ -3,11 +3,12 @@
 import { ProtectedRoute } from '@/components/features/auth/protected-route';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 
 export default function DashboardPage() {
     const { user } = useAuth();
 
-    // Get current date and time
+    // Get the current date and time
     const currentDate = new Date().toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
@@ -25,7 +26,7 @@ export default function DashboardPage() {
         <ProtectedRoute>
             <DashboardLayout>
                 <div className="space-y-6">
-                    {/* Welcome Section */}
+                    {/* Welcome, Section */}
                     <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
                         <div className="flex justify-between items-start mb-4">
                             <div>
@@ -41,7 +42,7 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                             <div className="text-right text-blue-100 text-sm">
-                                <p>UTC: 2025-07-04 19:34:15</p>
+                                <p>UTC: {new Date().toUTCString()}</p>
                                 <p>Market Status: <span className="text-green-300 font-semibold">Open</span></p>
                             </div>
                         </div>
@@ -72,7 +73,7 @@ export default function DashboardPage() {
 
                     {/* Quick Actions */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
+                        <Link href={'/deposits'} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
                                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -83,9 +84,9 @@ export default function DashboardPage() {
                             <div className="text-xs text-blue-600 font-medium">
                                 Supported: USD, EUR, BTC, ETH
                             </div>
-                        </div>
+                        </Link>
 
-                        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
+                        <Link href={'/stablecoins'} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
                                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -96,9 +97,9 @@ export default function DashboardPage() {
                             <div className="text-xs text-green-600 font-medium">
                                 USDfx, EURfx, JPYfx, GBPfx
                             </div>
-                        </div>
+                        </Link>
 
-                        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
+                        <Link href={'/forex-pairs'} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
                                 <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -109,9 +110,9 @@ export default function DashboardPage() {
                             <div className="text-xs text-purple-600 font-medium">
                                 24/7 trading available
                             </div>
-                        </div>
+                        </Link>
 
-                        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
+                        <Link href={'/analytics'} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
                                 <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -122,7 +123,7 @@ export default function DashboardPage() {
                             <div className="text-xs text-orange-600 font-medium">
                                 Real-time insights
                             </div>
-                        </div>
+                        </Link>
                     </div>
 
                     {/* Recent Activity & Market Overview */}

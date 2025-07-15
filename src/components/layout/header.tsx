@@ -1,9 +1,19 @@
 import React from 'react';
-import { Bell, Search, Menu, User } from 'lucide-react';
+import {Bell, Search, Menu, User, Settings, LogOut, Hand} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import {signOut} from "next-auth/react";
+import { usePathname } from 'next/navigation';
+import Link from "next/link";
 
 interface HeaderProps {
     onMenuClick?: () => void;
@@ -12,6 +22,21 @@ interface HeaderProps {
 
 export function Header({ onMenuClick, className }: HeaderProps) {
     const { user } = useAuth();
+
+    const pathname = usePathname();
+
+    // Map routes to titles
+    const pathToTitle: Record<string, string> = {
+        '/dashboard': 'Dashboard',
+        '/deposits': 'Deposits',
+        '/stablecoins': 'Stablecoins Market',
+        '/forex-pairs': 'Forex Pairs',
+        '/analytics': 'Analytics',
+        '/profile': 'Profile',
+        '/settings': 'Settings',
+    };
+
+    const title = pathToTitle[pathname] || 'Dashboard';
 
     return (
         <header className={`bg-white border-b border-gray-200 px-6 py-4 ${className || ''}`}>
@@ -29,7 +54,7 @@ export function Header({ onMenuClick, className }: HeaderProps) {
 
                     <div className="hidden md:block">
                         <h1 className="text-2xl font-semibold text-gray-900">
-                            Dashboard
+                            {title}
                         </h1>
                     </div>
                 </div>
@@ -74,26 +99,49 @@ export function Header({ onMenuClick, className }: HeaderProps) {
 
                     {/* User Avatar */}
                     <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
-                            {(user as any)?.image ? (
-                                <img
-                                    src={(user as any).image}
-                                    alt={user?.name || user?.username || 'User'}
-                                    className="w-full h-full object-cover rounded-full"
-                                    onError={(e) => {
-                                        // Fallback to default icon if image fails to load
-                                        e.currentTarget.style.display = 'none';
-                                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                                    }}
-                                />
-                            ) : null}
-                            <User className={`w-4 h-4 text-gray-600 ${(user as any)?.image ? 'hidden' : ''}`} />
-                        </div>
-                        <div className="hidden md:block">
-                            <p className="text-sm font-medium text-gray-900">
-                                {user?.name || user?.username || 'User'}
-                            </p>
-                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <div className="flex items-center space-x-3 overflow-hidden w-full cursor-pointer">
+                                    <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+                                        {(user as any)?.image ? (
+                                            <img
+                                                src={(user as any).image}
+                                                alt={user?.name || user?.username || 'User'}
+                                                className="w-full h-full object-cover rounded-full"
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                                }}
+                                            />
+                                        ) : null}
+                                        <User className={`w-5 h-5 text-gray-600 ${(user as any)?.image ? 'hidden' : ''}`} />
+                                    </div>
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56">
+                                <DropdownMenuItem>
+                                    <Hand className={'mr-2 h-4 w-4'} />
+                                    <span>Hi, {user?.name}</span>
+                                </DropdownMenuItem>
+                                <Link href={'/profile'}>
+                                    <DropdownMenuItem className={'cursor-pointer'}>
+                                        <User className={'mr-2 h-4 w-4'} />
+                                        <span>Profile</span>
+                                    </DropdownMenuItem>
+                                </Link>
+                                <Link href={'/settings'}>
+                                    <DropdownMenuItem className={'cursor-pointer'}>
+                                        <Settings className="mr-2 h-4 w-4" />
+                                        <span>Settings</span>
+                                    </DropdownMenuItem>
+                                </Link>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className={'cursor-pointer'} onClick={() => signOut({ callbackUrl: '/login', redirect: true })}>
+                                    <LogOut className="mr-2 h-4 w-4 text-red-500" />
+                                    <span className={'text-red-500'}>Sign out</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
             </div>

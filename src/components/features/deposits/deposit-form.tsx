@@ -40,7 +40,7 @@ export function DepositForm({ onSubmit, loading = false }: DepositFormProps) {
     };
 
     return (
-        <Card className="max-w-md mx-auto">
+        <Card className="max-w-full mx-auto">
             <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                     <Wallet className="w-5 h-5" />
@@ -208,7 +208,7 @@ export function DepositHistory({ deposits, loading = false }: DepositHistoryProp
     }
 
     return (
-        <Card>
+        <Card className={'max-w-full mx-auto'}>
             <CardHeader>
                 <CardTitle>Deposit History</CardTitle>
                 <CardDescription>
