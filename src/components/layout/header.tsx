@@ -103,18 +103,37 @@ export function Header({ onMenuClick, className }: HeaderProps) {
                             <DropdownMenuTrigger asChild>
                                 <div className="flex items-center space-x-3 overflow-hidden w-full cursor-pointer">
                                     <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
-                                        {(user as any)?.image ? (
+                                        {/*{(user as any)?.image ? (*/}
+                                        {/*    <img*/}
+                                        {/*        src={(user as any).image || '/next.svg'}*/}
+                                        {/*        alt={user?.name || user?.username || 'User'}*/}
+                                        {/*        className="w-full h-full object-cover rounded-full"*/}
+                                        {/*        onError={(e) => {*/}
+                                        {/*            e.currentTarget.style.display = 'none';*/}
+                                        {/*            e.currentTarget.nextElementSibling?.classList.remove('hidden');*/}
+                                        {/*        }}*/}
+                                        {/*    />*/}
+                                        {/*) : null}*/}
+                                        {/*<User className={`w-5 h-5 text-gray-600 ${(user as any)?.image ? 'hidden' : ''}`} />*/}
+
+                                        {(user as any)?.image ?(
                                             <img
                                                 src={(user as any).image}
                                                 alt={user?.name || user?.username || 'User'}
                                                 className="w-full h-full object-cover rounded-full"
                                                 onError={(e) => {
                                                     e.currentTarget.style.display = 'none';
-                                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                                    const nextEl = e.currentTarget.nextElementSibling as HTMLElement | null;
+                                                    if (nextEl) nextEl.classList.remove('hidden');
                                                 }}
                                             />
-                                        ) : null}
-                                        <User className={`w-5 h-5 text-gray-600 ${(user as any)?.image ? 'hidden' : ''}`} />
+                                        ) : (
+                                            <img
+                                                src="/01.png" // This image should be in your /public folder
+                                                alt="Fallback User"
+                                                className="w-full h-full object-cover rounded-full"
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </DropdownMenuTrigger>
