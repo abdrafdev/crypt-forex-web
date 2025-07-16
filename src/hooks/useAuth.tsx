@@ -9,6 +9,12 @@ interface User {
   email: string;
   username: string;
   name: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  image: string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  emailVerified?: Date | string | null;
 }
 
 interface AuthContextType {
@@ -44,6 +50,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Use Next Auth session
   const { data: session, status } = useSession();
 
+  // Function to fetch user data from database
+  const fetchUserFromDatabase = async (email: string): Promise<User | null> => {
+    try {
+      const response = await fetch(`/api/user/profile?email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.user;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching user from database:', error);
+      return null;
+    }
+  };
+
   // Load user from NextAuth session or localStorage
   useEffect(() => {
     const loadUserData = async () => {
@@ -54,20 +81,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (session && session.user) {
           console.log('NextAuth session found:', session.user.email);
 
-          const nextAuthUser = {
-            id: session.user.id || session.user.email!.split("@")[0],
-            email: session.user.email!,
-            username: session.user.username || session.user.email!.split('@')[0],
-            name: session.user.name || null,
-            firstName: session.user.firstName || null,
-            lastName: session.user.lastName || null,
-            image: session.user.image || null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
-          setUser(nextAuthUser);
+          // Fetch complete user data from database
+          const dbUser = await fetchUserFromDatabase(session.user.email!);
 
-          // For simplified version, we won't use custom tokens
+          if (dbUser) {
+            console.log('Database user found:', dbUser);
+            setUser(dbUser);
+          } else {
+            // Fallback to session data if database fetch fails
+            const nextAuthUser: User = {
+              id: session.user.id || session.user.email!.split("@")[0],
+              email: session.user.email!,
+              username: session.user.username || session.user.email!.split('@')[0],
+              name: session.user.name || null,
+              firstName: session.user.firstName || null,
+              lastName: session.user.lastName || null,
+              image: session.user.image || null,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              emailVerified: session.user.emailVerified || null,
+            };
+            setUser(nextAuthUser);
+          }
+
           console.log('NextAuth user loaded successfully');
           setIsLoading(false);
           return;
@@ -80,9 +116,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           if (savedToken && savedUser) {
             const parsedUser = JSON.parse(savedUser);
+            // Make sure emailVerified is properly parsed
+            if (parsedUser.emailVerified && typeof parsedUser.emailVerified === 'string') {
+              parsedUser.emailVerified = new Date(parsedUser.emailVerified);
+            }
             setToken(savedToken);
             setUser(parsedUser);
-            console.log('User loaded from localStorage');
+            console.log('User loaded from localStorage:', parsedUser);
           }
         }
       } catch (error) {
@@ -111,6 +151,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const data = await response.json();
 
       if (data.success && data.user && data.token) {
+        // Ensure emailVerified is properly formatted
+        if (data.user.emailVerified && typeof data.user.emailVerified === 'string') {
+          data.user.emailVerified = new Date(data.user.emailVerified);
+        }
+
         setUser(data.user);
         setToken(data.token);
         localStorage.setItem("auth_token", data.token);

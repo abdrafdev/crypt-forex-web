@@ -1,17 +1,39 @@
 'use client';
 
-import {Card} from '@/components/ui/card';
-import {Input} from '@/components/ui/input';
-import {Label} from '@/components/ui/label';
-import {Button} from '@/components/ui/button';
-import {DashboardLayout} from '@/components/layout/dashboard-layout';
-import {ProtectedRoute} from "@/components/features/auth/protected-route";
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { ProtectedRoute } from "@/components/features/auth/protected-route";
 import { useAuth } from '@/hooks/useAuth';
 
-
 export default function ProfilePage() {
+    const { user } = useAuth();
 
-    const {user} = useAuth();
+    // Helper function to check if email is verified
+    const isEmailVerified = () => {
+        if (!user?.emailVerified) return false;
+
+        // Handle both Date object and string
+        const verifiedDate = typeof user.emailVerified === 'string'
+            ? new Date(user.emailVerified)
+            : user.emailVerified;
+
+        return verifiedDate instanceof Date && !isNaN(verifiedDate.getTime());
+    };
+
+    const getEmailVerificationDate = () => {
+        if (!user?.emailVerified) return null;
+
+        const verifiedDate = typeof user.emailVerified === 'string'
+            ? new Date(user.emailVerified)
+            : user.emailVerified;
+
+        return verifiedDate instanceof Date && !isNaN(verifiedDate.getTime())
+            ? verifiedDate.toLocaleDateString()
+            : null;
+    };
 
     return (
         <ProtectedRoute>
@@ -23,9 +45,9 @@ export default function ProfilePage() {
                                 {/* Avatar */}
                                 <div>
                                     <h2 className="text-2xl font-semibold">
-                                        { user?.name || 'John Does' }
+                                        {user?.name || 'John Does'}
                                     </h2>
-                                    <p className="text-gray-500">{ user?.email || 'abc@gmail.com' }</p>
+                                    <p className="text-gray-500">{user?.email || 'abc@gmail.com'}</p>
                                 </div>
                             </div>
 
@@ -35,8 +57,8 @@ export default function ProfilePage() {
                                         <Label htmlFor="firstName">First Name</Label>
                                         <Input
                                             id="firstName"
-
                                             placeholder="John"
+                                            value={user?.firstName || ''}
                                         />
                                     </div>
 
@@ -44,8 +66,8 @@ export default function ProfilePage() {
                                         <Label htmlFor="lastName">Last Name</Label>
                                         <Input
                                             id="lastName"
-
                                             placeholder="Doe"
+                                            value={user?.lastName || ''}
                                         />
                                     </div>
                                 </div>
@@ -54,7 +76,6 @@ export default function ProfilePage() {
                                     <Label htmlFor="username">Username</Label>
                                     <Input
                                         id="username"
-
                                         placeholder="johndoe"
                                         value={user?.username || ''}
                                     />
@@ -65,14 +86,13 @@ export default function ProfilePage() {
                                     <Input
                                         id="email"
                                         type="email"
-
                                         placeholder="john.doe@example.com"
                                         value={user?.email || ''}
                                     />
                                 </div>
 
                                 <Button type="submit" className="w-full">
-
+                                    Update Profile
                                 </Button>
                             </form>
                         </Card>
@@ -83,12 +103,24 @@ export default function ProfilePage() {
                                 <div className="flex justify-between">
                                     <span className="text-gray-500">Member Since</span>
                                     <span>
-                </span>
+                                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-500">Email Status</span>
-                                    <span>
-                </span>
+                                    <span className={`flex items-center gap-2 ${isEmailVerified() ? 'text-green-600' : 'text-red-500'}`}>
+                                        {isEmailVerified() ? (
+                                            <>
+                                                <span className="text-green-500">✅</span>
+                                                Verified on {getEmailVerificationDate()}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="text-red-500">❌</span>
+                                                Not Verified
+                                            </>
+                                        )}
+                                    </span>
                                 </div>
                             </div>
                         </Card>

@@ -107,6 +107,14 @@ const authOptions: NextAuthOptions = {
         if (user.email) {
           const dbUser = await prisma.user.findUnique({
             where: { email: user.email },
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              avatar: true,
+              emailVerified: true,
+            },
           });
 
           if (dbUser) {
@@ -115,6 +123,7 @@ const authOptions: NextAuthOptions = {
             token.firstName = dbUser.firstName;
             token.lastName = dbUser.lastName;
             token.avatar = dbUser.avatar;
+            token.emailVerified = dbUser.emailVerified;
           }
         }
       }
@@ -128,6 +137,7 @@ const authOptions: NextAuthOptions = {
         session.user.firstName = token.firstName as string;
         session.user.lastName = token.lastName as string;
         session.user.image = (token.avatar as string) || session.user.image;
+        session.user.emailVerified = token.emailVerified as Date;
       }
       return session;
     },
