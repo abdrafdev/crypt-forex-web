@@ -6,9 +6,12 @@ import {Label} from '@/components/ui/label';
 import {Button} from '@/components/ui/button';
 import {DashboardLayout} from '@/components/layout/dashboard-layout';
 import {ProtectedRoute} from "@/components/features/auth/protected-route";
+import { useAuth } from '@/hooks/useAuth';
 
 
 export default function ProfilePage() {
+
+    const {user} = useAuth();
 
     return (
         <ProtectedRoute>
@@ -20,9 +23,9 @@ export default function ProfilePage() {
                                 {/* Avatar */}
                                 <div>
                                     <h2 className="text-2xl font-semibold">
-                                        Muhammad Naveed
+                                        { user?.name || 'John Does' }
                                     </h2>
-                                    <p className="text-gray-500">muhammadnaveedcis@gmail.com</p>
+                                    <p className="text-gray-500">{ user?.email || 'abc@gmail.com' }</p>
                                 </div>
                             </div>
 
@@ -53,6 +56,7 @@ export default function ProfilePage() {
                                         id="username"
 
                                         placeholder="johndoe"
+                                        value={user?.username || ''}
                                     />
                                 </div>
 
@@ -63,6 +67,7 @@ export default function ProfilePage() {
                                         type="email"
 
                                         placeholder="john.doe@example.com"
+                                        value={user?.email || ''}
                                     />
                                 </div>
 
