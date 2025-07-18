@@ -4,6 +4,7 @@ import { ProtectedRoute } from '@/components/features/auth/protected-route';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import {Button} from "@/components/ui/button";
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -262,9 +263,9 @@ export default function DashboardPage() {
                                 ))}
                             </div>
                             <div className="mt-4 pt-4 border-t border-gray-200">
-                                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                <Button className="w-full">
                                     View Full Market
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>
