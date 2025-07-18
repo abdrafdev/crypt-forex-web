@@ -41,7 +41,7 @@ export function DeleteDialog() {
                             </Button>
                         </DialogClose>
                         <Button variant="destructive" className={'w-1/2'}>
-                            Delete all items?
+                            Delete
                         </Button>
                     </div>
                 </DialogFooter>
