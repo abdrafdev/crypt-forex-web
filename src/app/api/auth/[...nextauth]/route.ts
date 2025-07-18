@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { NextAuthOptions } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { SessionManager } from "@/lib/session-manager";
+import { randomBytes } from "crypto";
 
 console.log("Simple NextAuth initialization starting...");
 
@@ -128,6 +130,30 @@ const authOptions: NextAuthOptions = {
             token.emailVerified = dbUser.emailVerified;
             token.isActive = dbUser.isActive;
             token.kycStatus = dbUser.kycStatus || undefined;
+
+            // Create session for Google OAuth login (only on initial login)
+            if (!token.sessionCreated) {
+              const sessionToken = randomBytes(32).toString("hex");
+              const sessionExpires = new Date(
+                Date.now() + 30 * 24 * 60 * 60 * 1000
+              ); // 30 days
+
+              console.log(
+                "🔐 Creating Google OAuth session for user:",
+                dbUser.id
+              );
+
+              await SessionManager.createSession(
+                dbUser.id,
+                sessionToken,
+                sessionExpires,
+                "Google OAuth (Browser Unknown)",
+                "127.0.0.1" // NextAuth doesn't provide request context easily
+              );
+
+              // Mark that session has been created for this token
+              token.sessionCreated = true;
+            }
           }
         }
       }

@@ -12,50 +12,50 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  username      String   @unique
-  password      String   
-  firstName     String?  
-  lastName      String?  
-  name          String?  
+  id            String    @id @default(cuid())
+  email         String    @unique
+  username      String    @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  name          String?
   avatar        String?
-  isActive      Boolean  @default(true)
+  isActive      Boolean   @default(true)
   emailVerified DateTime?
   kycStatus     KYCStatus @default(PENDING)
   kycData       Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // Relations for NextAuth
-  accounts      Account[]
-  sessions      Session[]
+  accounts Account[]
+  sessions Session[]
 
   // Platform Relations
-  wallets       Wallet[]
-  trades        Trade[]
-  watchlist     WatchlistItem[]
-  deposits      Deposit[]
-  withdrawals   Withdrawal[]
-  stablecoins   StablecoinHolding[]
-  forexPairs    ForexPairHolding[]
-  
+  wallets     Wallet[]
+  trades      Trade[]
+  watchlist   WatchlistItem[]
+  deposits    Deposit[]
+  withdrawals Withdrawal[]
+  stablecoins StablecoinHolding[]
+  forexPairs  ForexPairHolding[]
+
   @@map("users")
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -67,7 +67,18 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Enhanced session tracking
+  deviceInfo   String? // User agent, device type
+  ipAddress    String? // IP address
+  location     String? // City, Country
+  isActive     Boolean  @default(true)
+  lastActivity DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model VerificationToken {
@@ -80,17 +91,17 @@ model VerificationToken {
 
 // Wallet system for multi-currency support
 model Wallet {
-  id          String      @id @default(cuid())
-  userId      String
-  currency    String      // USD, EUR, GBP, BTC, ETH, etc.
-  balance     Decimal     @default(0) @db.Decimal(18, 8)
-  lockedBalance Decimal   @default(0) @db.Decimal(18, 8)
-  walletType  WalletType
-  address     String?     // For crypto wallets
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id            String     @id @default(cuid())
+  userId        String
+  currency      String // USD, EUR, GBP, BTC, ETH, etc.
+  balance       Decimal    @default(0) @db.Decimal(18, 8)
+  lockedBalance Decimal    @default(0) @db.Decimal(18, 8)
+  walletType    WalletType
+  address       String? // For crypto wallets
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, currency, walletType])
   @@map("wallets")
@@ -98,56 +109,56 @@ model Wallet {
 
 // Deposit tracking
 model Deposit {
-  id            String        @id @default(cuid())
-  userId        String
-  currency      String
-  amount        Decimal       @db.Decimal(18, 8)
-  method        DepositMethod
-  status        TransactionStatus @default(PENDING)
-  txHash        String?       // For crypto deposits
-  paymentRef    String?       // For fiat deposits
-  fees          Decimal       @default(0) @db.Decimal(18, 8)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id         String            @id @default(cuid())
+  userId     String
+  currency   String
+  amount     Decimal           @db.Decimal(18, 8)
+  method     DepositMethod
+  status     TransactionStatus @default(PENDING)
+  txHash     String? // For crypto deposits
+  paymentRef String? // For fiat deposits
+  fees       Decimal           @default(0) @db.Decimal(18, 8)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
 
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("deposits")
 }
 
 // Withdrawal tracking
 model Withdrawal {
-  id            String        @id @default(cuid())
-  userId        String
-  currency      String
-  amount        Decimal       @db.Decimal(18, 8)
-  method        WithdrawalMethod
-  status        TransactionStatus @default(PENDING)
-  txHash        String?
-  address       String?       // Destination address
-  bankDetails   Json?         // For fiat withdrawals
-  fees          Decimal       @default(0) @db.Decimal(18, 8)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id          String            @id @default(cuid())
+  userId      String
+  currency    String
+  amount      Decimal           @db.Decimal(18, 8)
+  method      WithdrawalMethod
+  status      TransactionStatus @default(PENDING)
+  txHash      String?
+  address     String? // Destination address
+  bankDetails Json? // For fiat withdrawals
+  fees        Decimal           @default(0) @db.Decimal(18, 8)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("withdrawals")
 }
 
 // Stablecoin definitions (USDfx, EURfx, GBPfx, etc.)
 model Stablecoin {
-  id              String    @id @default(cuid())
-  symbol          String    @unique // USDfx, EURfx, GBPfx
-  name            String    // USD Forex Token
-  baseCurrency    String    // USD, EUR, GBP
-  contractAddress String    @unique
-  decimals        Int       @default(18)
-  totalSupply     Decimal   @default(0) @db.Decimal(28, 18)
-  reserveAmount   Decimal   @default(0) @db.Decimal(18, 8)
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id              String   @id @default(cuid())
+  symbol          String   @unique // USDfx, EURfx, GBPfx
+  name            String // USD Forex Token
+  baseCurrency    String // USD, EUR, GBP
+  contractAddress String   @unique
+  decimals        Int      @default(18)
+  totalSupply     Decimal  @default(0) @db.Decimal(28, 18)
+  reserveAmount   Decimal  @default(0) @db.Decimal(18, 8)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relations
   holdings        StablecoinHolding[]
@@ -159,16 +170,16 @@ model Stablecoin {
 
 // User stablecoin holdings
 model StablecoinHolding {
-  id            String      @id @default(cuid())
+  id            String   @id @default(cuid())
   userId        String
   stablecoinId  String
-  balance       Decimal     @default(0) @db.Decimal(18, 8)
-  lockedBalance Decimal     @default(0) @db.Decimal(18, 8)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  balance       Decimal  @default(0) @db.Decimal(18, 8)
+  lockedBalance Decimal  @default(0) @db.Decimal(18, 8)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stablecoin    Stablecoin  @relation(fields: [stablecoinId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stablecoin Stablecoin @relation(fields: [stablecoinId], references: [id], onDelete: Cascade)
 
   @@unique([userId, stablecoinId])
   @@map("stablecoin_holdings")
@@ -176,39 +187,39 @@ model StablecoinHolding {
 
 // Forex pair definitions (e.g., USDfx/EURfx)
 model ForexPair {
-  id                String    @id @default(cuid())
-  symbol            String    @unique // USDEUR, GBPJPY, etc.
-  baseCurrencyId    String    // USDfx
-  quoteCurrencyId   String    // EURfx
-  contractAddress   String    @unique
-  isActive          Boolean   @default(true)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id              String   @id @default(cuid())
+  symbol          String   @unique // USDEUR, GBPJPY, etc.
+  baseCurrencyId  String // USDfx
+  quoteCurrencyId String // EURfx
+  contractAddress String   @unique
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  baseCurrency      Stablecoin @relation("BaseCurrency", fields: [baseCurrencyId], references: [id])
-  quoteCurrency     Stablecoin @relation("QuoteCurrency", fields: [quoteCurrencyId], references: [id])
+  baseCurrency  Stablecoin @relation("BaseCurrency", fields: [baseCurrencyId], references: [id])
+  quoteCurrency Stablecoin @relation("QuoteCurrency", fields: [quoteCurrencyId], references: [id])
 
   // Relations
-  holdings          ForexPairHolding[]
-  prices            ForexPairPrice[]
-  trades            Trade[]
+  holdings ForexPairHolding[]
+  prices   ForexPairPrice[]
+  trades   Trade[]
 
   @@map("forex_pairs")
 }
 
 // User forex pair holdings
 model ForexPairHolding {
-  id            String      @id @default(cuid())
+  id            String   @id @default(cuid())
   userId        String
   forexPairId   String
-  balance       Decimal     @default(0) @db.Decimal(18, 8)
-  lockedBalance Decimal     @default(0) @db.Decimal(18, 8)
-  avgPrice      Decimal     @default(0) @db.Decimal(18, 8)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  balance       Decimal  @default(0) @db.Decimal(18, 8)
+  lockedBalance Decimal  @default(0) @db.Decimal(18, 8)
+  avgPrice      Decimal  @default(0) @db.Decimal(18, 8)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  forexPair     ForexPair   @relation(fields: [forexPairId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  forexPair ForexPair @relation(fields: [forexPairId], references: [id], onDelete: Cascade)
 
   @@unique([userId, forexPairId])
   @@map("forex_pair_holdings")
@@ -216,53 +227,53 @@ model ForexPairHolding {
 
 // Forex pair price history
 model ForexPairPrice {
-  id            String      @id @default(cuid())
-  forexPairId   String
-  price         Decimal     @db.Decimal(18, 8)
-  change24h     Decimal     @db.Decimal(10, 4)
-  volume24h     Decimal     @db.Decimal(20, 8)
-  high24h       Decimal     @db.Decimal(18, 8)
-  low24h        Decimal     @db.Decimal(18, 8)
-  timestamp     DateTime    @default(now())
+  id          String   @id @default(cuid())
+  forexPairId String
+  price       Decimal  @db.Decimal(18, 8)
+  change24h   Decimal  @db.Decimal(10, 4)
+  volume24h   Decimal  @db.Decimal(20, 8)
+  high24h     Decimal  @db.Decimal(18, 8)
+  low24h      Decimal  @db.Decimal(18, 8)
+  timestamp   DateTime @default(now())
 
-  forexPair     ForexPair   @relation(fields: [forexPairId], references: [id], onDelete: Cascade)
+  forexPair ForexPair @relation(fields: [forexPairId], references: [id], onDelete: Cascade)
 
   @@map("forex_pair_prices")
 }
 
 // Enhanced trade model
 model Trade {
-  id            String        @id @default(cuid())
-  userId        String
-  forexPairId   String?       // For forex trades
-  symbol        String        // Trading pair symbol
-  type          TradeType
-  side          TradeSide
-  amount        Decimal       @db.Decimal(18, 8)
-  price         Decimal       @db.Decimal(18, 8)
-  total         Decimal       @db.Decimal(18, 8)
-  fees          Decimal       @default(0) @db.Decimal(18, 8)
-  status        TradeStatus   @default(PENDING)
-  orderType     OrderType     @default(MARKET)
-  executedAt    DateTime?
-  expiresAt     DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id          String      @id @default(cuid())
+  userId      String
+  forexPairId String? // For forex trades
+  symbol      String // Trading pair symbol
+  type        TradeType
+  side        TradeSide
+  amount      Decimal     @db.Decimal(18, 8)
+  price       Decimal     @db.Decimal(18, 8)
+  total       Decimal     @db.Decimal(18, 8)
+  fees        Decimal     @default(0) @db.Decimal(18, 8)
+  status      TradeStatus @default(PENDING)
+  orderType   OrderType   @default(MARKET)
+  executedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  forexPair     ForexPair?    @relation(fields: [forexPairId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  forexPair ForexPair? @relation(fields: [forexPairId], references: [id])
 
   @@map("trades")
 }
 
 model WatchlistItem {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   userId    String
   symbol    String
   type      WatchlistType @default(CRYPTO)
-  createdAt DateTime @default(now())
+  createdAt DateTime      @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, symbol])
   @@map("watchlist_items")
@@ -286,29 +297,29 @@ model CryptoPrice {
 
 // Liquidity pools for AMM functionality
 model LiquidityPool {
-  id              String    @id @default(cuid())
-  symbol          String    @unique
-  token0          String    // First token symbol
-  token1          String    // Second token symbol
-  reserve0        Decimal   @default(0) @db.Decimal(28, 18)
-  reserve1        Decimal   @default(0) @db.Decimal(28, 18)
-  totalSupply     Decimal   @default(0) @db.Decimal(28, 18)
-  fee             Decimal   @default(0.003) @db.Decimal(5, 4) // 0.3% default
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  token0      String // First token symbol
+  token1      String // Second token symbol
+  reserve0    Decimal  @default(0) @db.Decimal(28, 18)
+  reserve1    Decimal  @default(0) @db.Decimal(28, 18)
+  totalSupply Decimal  @default(0) @db.Decimal(28, 18)
+  fee         Decimal  @default(0.003) @db.Decimal(5, 4) // 0.3% default
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("liquidity_pools")
 }
 
 // System configuration
 model SystemConfig {
-  id            String    @id @default(cuid())
-  key           String    @unique
-  value         String
-  description   String?
-  updatedAt     DateTime  @updatedAt
-  createdAt     DateTime  @default(now())
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 
   @@map("system_config")
 }

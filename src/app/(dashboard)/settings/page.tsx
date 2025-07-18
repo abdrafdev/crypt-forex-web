@@ -2,10 +2,11 @@
 
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { ProtectedRoute } from "@/components/features/auth/protected-route";
+import { UserSessions } from "@/components/features/auth/user-sessions";
 import MetaMaskConnect from '@/components/metamask/meta-mask-connect';
 import { useState, useEffect } from 'react';
 import { Wallet, Shield, Bell, User, ChevronRight, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
-import {DeleteDialog} from "@/components/ui/delete-dialog";
+import { DeleteDialog } from "@/components/ui/delete-dialog";
 
 
 
@@ -19,7 +20,7 @@ interface WalletSettingsProps {
 
 
 // Wallet Settings Component
-function WalletSettings({ connectedAccount, onConnect, onDisconnect, balance } : WalletSettingsProps) {
+function WalletSettings({ connectedAccount, onConnect, onDisconnect, balance }: WalletSettingsProps) {
     const formatAddress = (address: string) => {
         if (!address) return '';
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -324,6 +325,9 @@ export default function SettingsPage() {
 
                         {/* Security Settings */}
                         <SecuritySettings />
+
+                        {/* Active Sessions */}
+                        <UserSessions />
 
                         {/* Notification Settings */}
                         <NotificationSettings />
