@@ -5,8 +5,11 @@ import { ProtectedRoute } from "@/components/features/auth/protected-route";
 import { UserSessions } from "@/components/features/auth/user-sessions";
 import MetaMaskConnect from '@/components/metamask/meta-mask-connect';
 import { useState, useEffect } from 'react';
-import { Wallet, Shield, Bell, User, ChevronRight, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
+import { Wallet, Shield, Bell, User, ChevronRight, CheckCircle, AlertCircle, Trash2, RefreshCw } from 'lucide-react';
 import { DeleteDialog } from "@/components/ui/delete-dialog";
+import Link from "next/link";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 
 
@@ -15,12 +18,14 @@ interface WalletSettingsProps {
     onConnect: (account: string) => void;
     onDisconnect: () => void;
     balance: string;
+    isLoadingBalance: boolean;
+    onRefreshBalance: () => void;
 }
 
 
 
 // Wallet Settings Component
-function WalletSettings({ connectedAccount, onConnect, onDisconnect, balance }: WalletSettingsProps) {
+function WalletSettings({ connectedAccount, onConnect, onDisconnect, balance, isLoadingBalance, onRefreshBalance }: WalletSettingsProps) {
     const formatAddress = (address: string) => {
         if (!address) return '';
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -60,7 +65,22 @@ function WalletSettings({ connectedAccount, onConnect, onDisconnect, balance }: 
 
                             <div>
                                 <label className="text-sm font-medium text-gray-600">Balance</label>
-                                <p className="text-lg font-semibold text-gray-900">{balance} ETH</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <p className="text-lg font-semibold text-gray-900">
+                                        {isLoadingBalance ? 'Loading...' : `${balance} ETH`}
+                                    </p>
+                                    <button
+                                        onClick={onRefreshBalance}
+                                        disabled={isLoadingBalance}
+                                        className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-50"
+                                        title="Refresh balance"
+                                    >
+                                        <RefreshCw className={`w-4 h-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />
+                                    </button>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    This is your actual MetaMask balance. Click refresh to update.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -70,25 +90,29 @@ function WalletSettings({ connectedAccount, onConnect, onDisconnect, balance }: 
                         <h3 className="font-semibold text-gray-900">Wallet Actions</h3>
 
                         <div className="border border-gray-200 rounded-lg divide-y">
-                            <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-gray-900">View Transaction History</p>
-                                    <p className="text-sm text-gray-500">See all your wallet transactions</p>
-                                </div>
-                                <ChevronRight className="w-5 h-5 text-gray-400" />
-                            </button>
+                            <Link href={''}>
+                                <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between cursor-pointer">
+                                    <div>
+                                        <p className="font-medium text-gray-900">View Transaction History</p>
+                                        <p className="text-sm text-gray-500">See all your wallet transactions</p>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                                </button>
+                            </Link>
 
-                            <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-gray-900">Network Settings</p>
-                                    <p className="text-sm text-gray-500">Manage network connections</p>
-                                </div>
-                                <ChevronRight className="w-5 h-5 text-gray-400" />
-                            </button>
+                            <Link href={''}>
+                                <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between cursor-pointer">
+                                    <div>
+                                        <p className="font-medium text-gray-900">Network Settings</p>
+                                        <p className="text-sm text-gray-500">Manage network connections</p>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                                </button>
+                            </Link>
 
                             <button
                                 onClick={onDisconnect}
-                                className="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center justify-between text-red-600"
+                                className="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center justify-between text-red-600 cursor-pointer"
                             >
                                 <div>
                                     <p className="font-medium">Disconnect Wallet</p>
@@ -159,29 +183,35 @@ function AccountSettings() {
 
             <div className="space-y-4">
                 <div className="border border-gray-200 rounded-lg divide-y">
-                    <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between">
-                        <div>
-                            <p className="font-medium text-gray-900">Profile Information</p>
-                            <p className="text-sm text-gray-500">Update your personal details</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
+                    <Link href={'/profile'}>
+                        <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between cursor-pointer">
+                            <div>
+                                <p className="font-medium text-gray-900">Profile Information</p>
+                                <p className="text-sm text-gray-500">Update your personal details</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                        </button>
+                    </Link>
 
-                    <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between">
-                        <div>
-                            <p className="font-medium text-gray-900">Email & Password</p>
-                            <p className="text-sm text-gray-500">Manage your login credentials</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
+                    <Link href={'/'}>
+                        <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between cursor-pointer">
+                            <div>
+                                <p className="font-medium text-gray-900">Email & Password</p>
+                                <p className="text-sm text-gray-500">Manage your login credentials</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                        </button>
+                    </Link>
 
-                    <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between">
-                        <div>
-                            <p className="font-medium text-gray-900">Two-Factor Authentication</p>
-                            <p className="text-sm text-gray-500">Enable additional security</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
+                    <Link href={''}>
+                        <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between cursor-pointer">
+                            <div>
+                                <p className="font-medium text-gray-900">Two-Factor Authentication</p>
+                                <p className="text-sm text-gray-500">Enable additional security</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                        </button>
+                    </Link>
 
                     <DeleteDialog />
                 </div>
@@ -201,33 +231,31 @@ function SecuritySettings() {
 
             <div className="space-y-4">
                 <div className="border border-gray-200 rounded-lg divide-y">
-                    <div className="px-4 py-3 flex items-center justify-between">
+                    <Label htmlFor={'notifications'} className="px-4 py-3 flex items-center justify-between cursor-pointer">
                         <div>
-                            <p className="font-medium text-gray-900">Login Notifications</p>
+                            <p className="text-lg font-medium text-gray-900">Login Notifications</p>
                             <p className="text-sm text-gray-500">Get notified of new login attempts</p>
                         </div>
-                        <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600 transition-colors">
-                            <span className="translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
-                        </button>
-                    </div>
+                        <Switch id={'notifications'} />
+                    </Label>
 
-                    <div className="px-4 py-3 flex items-center justify-between">
+                    <Label htmlFor={'transactions'} className="px-4 py-3 flex items-center justify-between cursor-pointer">
                         <div>
-                            <p className="font-medium text-gray-900">Transaction Alerts</p>
+                            <p className="text-lg font-medium text-gray-900">Transaction Alerts</p>
                             <p className="text-sm text-gray-500">Alert for large transactions</p>
                         </div>
-                        <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600 transition-colors">
-                            <span className="translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
-                        </button>
-                    </div>
+                        <Switch id={'transactions'} />
+                    </Label>
 
-                    <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between">
-                        <div>
-                            <p className="font-medium text-gray-900">Active Sessions</p>
-                            <p className="text-sm text-gray-500">Manage your active login sessions</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
+                    <Link href={''}>
+                        <button className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between cursor-pointer">
+                            <div>
+                                <p className="font-medium text-gray-900">Active Sessions</p>
+                                <p className="text-sm text-gray-500">Manage your active login sessions</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                        </button>
+                    </Link>
                 </div>
             </div>
         </div>
@@ -245,35 +273,21 @@ function NotificationSettings() {
 
             <div className="space-y-4">
                 <div className="border border-gray-200 rounded-lg divide-y">
-                    <div className="px-4 py-3 flex items-center justify-between">
+                    <Label htmlFor={'emailNotifications'} className="px-4 py-3 flex items-center justify-between cursor-pointer">
                         <div>
-                            <p className="font-medium text-gray-900">Email Notifications</p>
+                            <p className="text-lg font-medium text-gray-900">Email Notifications</p>
                             <p className="text-sm text-gray-500">Receive updates via email</p>
                         </div>
-                        <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600 transition-colors">
-                            <span className="translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
-                        </button>
-                    </div>
+                        <Switch id={'emailNotifications'} />
+                    </Label>
 
-                    <div className="px-4 py-3 flex items-center justify-between">
+                    <Label htmlFor={'pushNotifications'} className="px-4 py-3 flex items-center justify-between cursor-pointer">
                         <div>
-                            <p className="font-medium text-gray-900">Push Notifications</p>
+                            <p className="text-lg font-medium text-gray-900">Push Notifications</p>
                             <p className="text-sm text-gray-500">Get instant push notifications</p>
                         </div>
-                        <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors">
-                            <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
-                        </button>
-                    </div>
-
-                    <div className="px-4 py-3 flex items-center justify-between">
-                        <div>
-                            <p className="font-medium text-gray-900">SMS Notifications</p>
-                            <p className="text-sm text-gray-500">Receive SMS for important updates</p>
-                        </div>
-                        <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors">
-                            <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
-                        </button>
-                    </div>
+                        <Switch id={'pushNotifications'} />
+                    </Label>
                 </div>
             </div>
         </div>
@@ -283,28 +297,91 @@ function NotificationSettings() {
 export default function SettingsPage() {
     const [connectedAccount, setConnectedAccount] = useState('');
     const [accountBalance, setAccountBalance] = useState('0.0');
+    const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+
+    // Function to fetch actual MetaMask balance
+    const fetchMetaMaskBalance = async (account: string) => {
+        try {
+            setIsLoadingBalance(true);
+
+            if (typeof window !== 'undefined' && window.ethereum) {
+                // Check if MetaMask is connected
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (!accounts.includes(account)) {
+                    throw new Error('Account not connected in MetaMask');
+                }
+
+                // Request balance from MetaMask
+                const balance = await window.ethereum.request({
+                    method: 'eth_getBalance',
+                    params: [account, 'latest']
+                });
+
+                // Convert from Wei to ETH (1 ETH = 10^18 Wei)
+                const balanceInEth = parseInt(balance, 16) / Math.pow(10, 18);
+                setAccountBalance(balanceInEth.toFixed(4));
+            } else {
+                throw new Error('MetaMask not found');
+            }
+        } catch (error) {
+            console.error('Error fetching balance:', error);
+            setAccountBalance('0.0000');
+        } finally {
+            setIsLoadingBalance(false);
+        }
+    };
 
     // Load saved account from localStorage on component mount
     useEffect(() => {
         const savedAccount = localStorage.getItem('metamask_account');
         if (savedAccount) {
             setConnectedAccount(savedAccount);
-            // In a real app, you'd fetch the current balance here
-            setAccountBalance('1.234'); // Mock balance
+            // Fetch the actual balance from MetaMask
+            fetchMetaMaskBalance(savedAccount);
         }
-    }, []);
+
+        // Listen for account changes in MetaMask
+        if (typeof window !== 'undefined' && window.ethereum) {
+            const handleAccountsChanged = (accounts: string[]) => {
+                if (accounts.length === 0) {
+                    // User disconnected
+                    handleAccountDisconnect();
+                } else if (accounts[0] !== connectedAccount) {
+                    // User switched accounts
+                    setConnectedAccount(accounts[0]);
+                    localStorage.setItem('metamask_account', accounts[0]);
+                    fetchMetaMaskBalance(accounts[0]);
+                }
+            };
+
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+            // Cleanup listener on unmount
+            return () => {
+                if (window.ethereum?.removeListener) {
+                    window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+                }
+            };
+        }
+    }, [connectedAccount]);
 
     const handleAccountConnect = (account: string) => {
         setConnectedAccount(account);
         localStorage.setItem('metamask_account', account);
-        // In a real app, you'd fetch the balance here
-        setAccountBalance('1.234'); // Mock balance
+        // Fetch the actual balance from MetaMask
+        fetchMetaMaskBalance(account);
     };
 
     const handleAccountDisconnect = () => {
         setConnectedAccount('');
         setAccountBalance('0.0');
         localStorage.removeItem('metamask_account');
+    };
+
+    const handleRefreshBalance = () => {
+        if (connectedAccount) {
+            fetchMetaMaskBalance(connectedAccount);
+        }
     };
 
     return (
@@ -321,6 +398,8 @@ export default function SettingsPage() {
                             onConnect={handleAccountConnect}
                             onDisconnect={handleAccountDisconnect}
                             balance={accountBalance}
+                            isLoadingBalance={isLoadingBalance}
+                            onRefreshBalance={handleRefreshBalance}
                         />
 
                         {/* Security Settings */}
