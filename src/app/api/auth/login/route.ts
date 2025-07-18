@@ -159,14 +159,6 @@ export async function POST(req: NextRequest) {
     // Input validation
     const errors: string[] = [];
 
-    console.log("🔐 Login attempt for:", email);
-    console.log("📡 Request headers:", {
-      userAgent: req.headers.get("user-agent")?.substring(0, 50) + "...",
-      xForwardedFor: req.headers.get("x-forwarded-for"),
-      xRealIp: req.headers.get("x-real-ip"),
-      cfConnectingIp: req.headers.get("cf-connecting-ip"),
-    });
-
     if (!email || !password) {
       errors.push("Email and password are required");
     }
@@ -243,16 +235,12 @@ export async function POST(req: NextRequest) {
     const sessionToken = randomBytes(32).toString("hex");
     const sessionExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    console.log("Creating session for user:", user.id);
-
     await SessionManager.createSessionWithRequest(
       user.id,
       sessionToken,
       sessionExpires,
       req
     );
-
-    console.log("Session created successfully");
 
     // Return success response
     return NextResponse.json(

@@ -150,7 +150,6 @@ function LoginFormContent({
 
     const handleGoogleLogin = () => {
         // TODO: Implement Google OAuth login
-        console.log('Google login clicked')
         setErrors({ general: 'Google login will be implemented soon!' })
     }
 

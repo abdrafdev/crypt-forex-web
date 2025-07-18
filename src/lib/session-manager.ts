@@ -18,8 +18,6 @@ interface LocationInfo {
 
 export class SessionManager {
   static parseUserAgent(userAgent: string): DeviceInfo {
-    console.log("Parsing user agent:", userAgent);
-
     // Browser detection with more specific patterns
     let browser = "Unknown";
     if (userAgent.includes("Edg/")) browser = "Microsoft Edge";
@@ -69,14 +67,10 @@ export class SessionManager {
       device = "Tablet";
 
     const result = { browser, os, device, userAgent };
-    console.log("Parsed device info:", result);
-
     return result;
   }
 
   static async getLocationFromIP(ip: string): Promise<LocationInfo> {
-    console.log("Getting location for IP:", ip);
-
     // Skip location lookup for local IPs
     if (
       ip === "127.0.0.1" ||
@@ -85,7 +79,6 @@ export class SessionManager {
       ip.startsWith("10.") ||
       ip.startsWith("172.")
     ) {
-      console.log("Local IP detected, skipping geolocation");
       return {
         ip,
         city: "Local",
@@ -104,10 +97,7 @@ export class SessionManager {
 
       for (const serviceUrl of services) {
         try {
-          console.log("Trying geolocation service:", serviceUrl);
-
           const response = await fetch(serviceUrl, {
-            timeout: 5000,
             headers: {
               "User-Agent": "CryptoForex-App/1.0",
             },
@@ -116,7 +106,6 @@ export class SessionManager {
           if (!response.ok) continue;
 
           const data = await response.json();
-          console.log("Geolocation response:", data);
 
           // Handle ip-api.com response
           if (data.status === "success" && data.country) {
@@ -154,12 +143,10 @@ export class SessionManager {
             };
           }
         } catch (serviceError) {
-          console.log("Service failed:", serviceUrl, serviceError);
           continue;
         }
       }
 
-      console.log("All geolocation services failed, using fallback");
       return {
         ip,
         city: "Unknown",
@@ -181,8 +168,6 @@ export class SessionManager {
     userAgent: string;
     ip: string;
   } {
-    console.log("Extracting client info from request headers");
-
     // Get all relevant headers
     const headers = request.headers;
     const userAgent = headers.get("user-agent") || "Unknown User Agent";
@@ -206,7 +191,6 @@ export class SessionManager {
     for (const header of ipHeaders) {
       const value = headers.get(header);
       if (value) {
-        console.log(`Found IP in ${header}:`, value);
         // Handle comma-separated IPs (take the first one)
         ip = value.split(",")[0].trim();
         // Remove port if present
@@ -217,11 +201,6 @@ export class SessionManager {
         }
       }
     }
-
-    console.log("Final extracted info:", {
-      userAgent: userAgent.substring(0, 100) + "...",
-      ip,
-    });
 
     return { userAgent, ip };
   }
@@ -240,31 +219,10 @@ export class SessionManager {
     request: Request
   ): Promise<void> {
     try {
-      console.log("🚀 Creating session with request for user:", userId);
-
       const { userAgent, ip } = this.getClientInfoFromRequest(request);
-      console.log("📱 Raw client info:", {
-        userAgent: userAgent.substring(0, 50) + "...",
-        ip,
-      });
-
       const deviceInfo = this.parseUserAgent(userAgent);
-      console.log("🔍 Parsed device info:", deviceInfo);
-
       const locationInfo = await this.getLocationFromIP(ip);
-      console.log("🌍 Location info:", locationInfo);
-
       const deviceString = `${deviceInfo.browser} on ${deviceInfo.os} (${deviceInfo.device})`;
-
-      console.log("💾 Creating session with data:", {
-        userId,
-        sessionToken: sessionToken.substring(0, 8) + "...",
-        deviceString,
-        ipAddress: locationInfo.ip,
-        location: locationInfo.location,
-        city: locationInfo.city,
-        country: locationInfo.country,
-      });
 
       const session = await prisma.session.create({
         data: {
@@ -282,18 +240,9 @@ export class SessionManager {
           lastActivity: new Date(),
         },
       });
-
-      console.log(`✅ Session created successfully:`, {
-        id: session.id,
-        userId: session.userId,
-        deviceInfo: session.deviceInfo,
-        location: session.location,
-        ipAddress: session.ipAddress,
-      });
     } catch (error) {
       console.error("❌ Failed to create session:", error);
       // Don't throw error to prevent login failure
-      console.log("⚠️  Continuing with login despite session creation failure");
     }
   }
 
@@ -305,8 +254,6 @@ export class SessionManager {
     ip?: string
   ): Promise<void> {
     try {
-      console.log("🚀 Creating session for user:", userId);
-
       const deviceInfo = this.parseUserAgent(userAgent || "Unknown Browser");
       const locationInfo = ip
         ? await this.getLocationFromIP(ip)
@@ -318,13 +265,6 @@ export class SessionManager {
           };
 
       const deviceString = `${deviceInfo.browser} on ${deviceInfo.os} (${deviceInfo.device})`;
-
-      console.log("💾 Creating session with fallback data:", {
-        userId,
-        deviceString,
-        ipAddress: locationInfo.ip,
-        location: locationInfo.location,
-      });
 
       await prisma.session.create({
         data: {
@@ -342,10 +282,6 @@ export class SessionManager {
           lastActivity: new Date(),
         },
       });
-
-      console.log(
-        `✅ Session created successfully for user ${userId} from ${deviceString} at ${locationInfo.location}`
-      );
     } catch (error) {
       console.error("❌ Failed to create session:", error);
       // Don't throw to prevent breaking the auth flow
@@ -386,8 +322,6 @@ export class SessionManager {
 
   static async getUserSessions(userId: string) {
     try {
-      console.log("Getting sessions for userId:", userId);
-
       const sessions = await prisma.session.findMany({
         where: {
           userId,
@@ -407,9 +341,6 @@ export class SessionManager {
         },
       });
 
-      console.log(
-        `Found ${sessions.length} active sessions for user ${userId}`
-      );
       return sessions;
     } catch (error) {
       console.error("Failed to get user sessions:", error);

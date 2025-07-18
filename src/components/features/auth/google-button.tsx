@@ -20,8 +20,6 @@ export const GoogleButton: React.FC<GoogleButtonProps> = ({
     const handleGoogleSignIn = async () => {
         try {
             setIsLoading(true);
-            console.log('Starting Google OAuth flow...');
-            console.log('Callback URL:', callbackUrl);
 
             const result = await signIn('google', {
                 callbackUrl,

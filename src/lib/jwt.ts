@@ -1,5 +1,5 @@
 import { JWTPayload } from "@/types/jwt";
-import jwt from "jsonwebtoken";
+import jwt from "@wwtc/jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 

@@ -29,21 +29,14 @@ export function UserSessions() {
 
     const fetchSessions = async () => {
         try {
-            console.log("Fetching sessions. NextAuth session:", session);
-            console.log("NextAuth status:", status);
-
             if (status === "loading") {
-                console.log("NextAuth still loading, waiting...");
                 return;
             }
 
             if (!session?.user?.id) {
-                console.log("No session or user ID found");
                 setLoading(false);
                 return;
             }
-
-            console.log("Fetching sessions for user ID:", session.user.id);
 
             // For NextAuth, we need to create an API that works with the user ID from the session
             // We'll create a new endpoint that doesn't require JWT tokens
@@ -54,11 +47,8 @@ export function UserSessions() {
                 },
             });
 
-            console.log("Response status:", response.status);
-
             if (response.ok) {
                 const data: SessionsResponse = await response.json();
-                console.log("Sessions data:", data);
                 setSessions(data.sessions);
             } else {
                 const errorData = await response.json();
@@ -76,7 +66,6 @@ export function UserSessions() {
             setTerminating(sessionId);
 
             if (!session?.user?.id) {
-                console.log("No session found for terminating");
                 return;
             }
 
@@ -102,7 +91,6 @@ export function UserSessions() {
     // Debug function to create a test session
     const createTestSession = async () => {
         if (!session?.user?.id) {
-            console.log("No user ID found for test session creation");
             return;
         }
 
@@ -116,7 +104,6 @@ export function UserSessions() {
             });
 
             if (response.ok) {
-                console.log("Test session created successfully");
                 fetchSessions(); // Refresh sessions
             } else {
                 console.error("Failed to create test session");

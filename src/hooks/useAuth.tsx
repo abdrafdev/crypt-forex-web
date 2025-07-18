@@ -77,17 +77,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        console.log('Auth loading state:', { status, session: !!session });
-
         // First check if we have a NextAuth session
         if (session && session.user) {
-          console.log('NextAuth session found:', session.user.email);
-
           // Fetch complete user data from database
           const dbUser = await fetchUserFromDatabase(session.user.email!);
 
           if (dbUser) {
-            console.log('Database user found:', dbUser);
             setUser(dbUser);
           } else {
             // Fallback to session data if database fetch fails
@@ -108,7 +103,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setUser(nextAuthUser);
           }
 
-          console.log('NextAuth user loaded successfully');
           setIsLoading(false);
           return;
         }
@@ -126,7 +120,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
             }
             setToken(savedToken);
             setUser(parsedUser);
-            console.log('User loaded from localStorage:', parsedUser);
           }
         }
       } catch (error) {

@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { SessionManager } from "@/lib/session-manager";
 import { randomBytes } from "crypto";
 
-console.log("Simple NextAuth initialization starting...");
-
 const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -52,7 +50,6 @@ const authOptions: NextAuthOptions = {
                 emailVerified: new Date(),
               },
             });
-            console.log("Created new user:", existingUser);
           } else {
             // Update existing user with latest Google info
             existingUser = await prisma.user.update({
@@ -67,7 +64,6 @@ const authOptions: NextAuthOptions = {
                 emailVerified: existingUser.emailVerified || new Date(),
               },
             });
-            console.log("Updated existing user:", existingUser);
           }
 
           // Store user ID in the user object for later use
@@ -81,8 +77,6 @@ const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      console.log("NextAuth redirect callback:", { url, baseUrl });
-
       // Always redirect to dashboard after successful login
       if (url.includes("/callback") || url.includes("/signin")) {
         return `${baseUrl}/dashboard`;
@@ -137,11 +131,6 @@ const authOptions: NextAuthOptions = {
               const sessionExpires = new Date(
                 Date.now() + 30 * 24 * 60 * 60 * 1000
               ); // 30 days
-
-              console.log(
-                "🔐 Creating Google OAuth session for user:",
-                dbUser.id
-              );
 
               await SessionManager.createSession(
                 dbUser.id,
