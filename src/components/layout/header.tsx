@@ -116,9 +116,9 @@ export function Header({ onMenuClick, className }: HeaderProps) {
                                         {/*) : null}*/}
                                         {/*<User className={`w-5 h-5 text-gray-600 ${(user as any)?.image ? 'hidden' : ''}`} />*/}
 
-                                        {(user as any)?.image ?(
+                                        {user?.avatar ? (
                                             <img
-                                                src={(user as any).image}
+                                                src={user.avatar}
                                                 alt={user?.name || user?.username || 'User'}
                                                 className="w-full h-full object-cover rounded-full"
                                                 onError={(e) => {
@@ -127,13 +127,8 @@ export function Header({ onMenuClick, className }: HeaderProps) {
                                                     if (nextEl) nextEl.classList.remove('hidden');
                                                 }}
                                             />
-                                        ) : (
-                                            <img
-                                                src="/01.png" // This image should be in your /public folder
-                                                alt="Fallback User"
-                                                className="w-full h-full object-cover rounded-full"
-                                            />
-                                        )}
+                                        ) : null}
+                                        <User className={`w-5 h-5 text-gray-600 ${user?.avatar ? 'hidden' : ''}`} />
                                     </div>
                                 </div>
                             </DropdownMenuTrigger>

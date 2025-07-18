@@ -11,7 +11,7 @@ interface User {
   name: string | null;
   firstName: string | null;
   lastName: string | null;
-  image: string | null;
+  avatar: string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
   emailVerified?: Date | string | null;
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               name: session.user.name || null,
               firstName: session.user.firstName || null,
               lastName: session.user.lastName || null,
-              image: session.user.image || null,
+              avatar: session.user.image || null,
               createdAt: new Date(),
               updatedAt: new Date(),
               emailVerified: session.user.emailVerified || null,
