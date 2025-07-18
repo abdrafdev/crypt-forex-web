@@ -7,7 +7,6 @@ export interface User {
   username?: string;
   firstName?: string | null;
   lastName?: string | null;
-  image?: string | null;
   avatar?: string | null;
   walletAddress?: string;
   createdAt: Date;
