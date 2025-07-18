@@ -134,7 +134,7 @@ interface LoginResponse {
   user?: {
     id: string;
     email: string;
-    username: string;
+    username?: string;
     name: string | null;
     firstName?: string | null;
     lastName?: string | null;
@@ -203,6 +203,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check if password exists (should not be null for regular users)
+    if (!user.password) {
+      return NextResponse.json(
+        { success: false, message: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
     // Verify password
     const isValidPassword = await verifyPassword(password, user.password);
 
@@ -217,7 +225,7 @@ export async function POST(req: NextRequest) {
     const token = signToken({
       userId: user.id,
       email: user.email,
-      username: user.username,
+      username: user.username || undefined,
     });
 
     // Return success response
@@ -228,13 +236,13 @@ export async function POST(req: NextRequest) {
         user: {
           id: user.id,
           email: user.email,
-          username: user.username,
+          username: user.username || undefined,
           name: user.name,
           firstName: user.firstName,
           lastName: user.lastName,
           emailVerified: user.emailVerified,
           isActive: user.isActive,
-          kycStatus: user.kycStatus,
+          kycStatus: user.kycStatus || undefined,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },

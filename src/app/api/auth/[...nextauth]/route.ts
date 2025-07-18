@@ -121,13 +121,13 @@ const authOptions: NextAuthOptions = {
 
           if (dbUser) {
             token.id = dbUser.id;
-            token.username = dbUser.username;
-            token.firstName = dbUser.firstName;
-            token.lastName = dbUser.lastName;
-            token.avatar = dbUser.avatar;
+            token.username = dbUser.username || undefined;
+            token.firstName = dbUser.firstName || undefined;
+            token.lastName = dbUser.lastName || undefined;
+            token.avatar = dbUser.avatar || undefined;
             token.emailVerified = dbUser.emailVerified;
             token.isActive = dbUser.isActive;
-            token.kycStatus = dbUser.kycStatus;
+            token.kycStatus = dbUser.kycStatus || undefined;
           }
         }
       }
