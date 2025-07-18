@@ -3,12 +3,16 @@
 export interface User {
   id: string;
   email: string;
-  name?: string | null;
-  username?: string;
+  username: string;
+  password?: string; // Optional for frontend types
   firstName?: string | null;
   lastName?: string | null;
+  name?: string | null;
   avatar?: string | null;
-  walletAddress?: string;
+  isActive: boolean;
+  emailVerified?: Date | null;
+  kycStatus: KYCStatus;
+  kycData?: any | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,55 +20,226 @@ export interface User {
 export interface Wallet {
   id: string;
   userId: string;
-  balance: Record<string, number>; // currency -> amount
-  fiatBalance: Record<string, number>; // fiat currency -> amount
-  cryptoBalance: Record<string, number>; // crypto currency -> amount
+  currency: string;
+  balance: number; // Using number for frontend, Prisma handles Decimal conversion
+  lockedBalance: number;
+  walletType: WalletType;
+  address?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Deposit {
   id: string;
   userId: string;
-  amount: number;
   currency: string;
-  type: "fiat" | "crypto";
-  status: "pending" | "confirmed" | "failed";
-  transactionHash?: string;
+  amount: number;
+  method: DepositMethod;
+  status: TransactionStatus;
+  txHash?: string | null;
+  paymentRef?: string | null;
+  fees: number;
   createdAt: Date;
-  confirmedAt?: Date;
+  updatedAt: Date;
+}
+
+export interface Withdrawal {
+  id: string;
+  userId: string;
+  currency: string;
+  amount: number;
+  method: WithdrawalMethod;
+  status: TransactionStatus;
+  txHash?: string | null;
+  address?: string | null;
+  bankDetails?: any | null;
+  fees: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Stablecoin {
   id: string;
   symbol: string;
   name: string;
-  baseCurrency: string; // USD, EUR, JPY, etc.
-  currentPrice: number;
+  baseCurrency: string;
+  contractAddress: string;
+  decimals: number;
   totalSupply: number;
-  marketCap: number;
-  priceChange24h: number;
-  contractAddress?: string;
+  reserveAmount: number;
   isActive: boolean;
   createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface StablecoinHolding {
+  id: string;
+  userId: string;
+  stablecoinId: string;
+  balance: number;
+  lockedBalance: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ForexPair {
   id: string;
-  name: string;
-  symbol: string; // e.g., "JPYGBPfx"
-  baseCurrency: string;
-  quoteCurrency: string;
-  baseStablecoin: Stablecoin;
-  quoteStablecoin: Stablecoin;
-  currentPrice: number;
-  priceChange24h: number;
+  symbol: string;
+  baseCurrencyId: string;
+  quoteCurrencyId: string;
+  contractAddress: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  // Relations
+  baseCurrency?: Stablecoin;
+  quoteCurrency?: Stablecoin;
+}
+
+export interface ForexPairHolding {
+  id: string;
+  userId: string;
+  forexPairId: string;
+  balance: number;
+  lockedBalance: number;
+  avgPrice: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ForexPairPrice {
+  id: string;
+  forexPairId: string;
+  price: number;
+  change24h: number;
   volume24h: number;
   high24h: number;
   low24h: number;
-  totalLiquidity: number;
-  isActive: boolean;
+  timestamp: Date;
+}
+
+export interface Trade {
+  id: string;
+  userId: string;
+  forexPairId?: string | null;
+  symbol: string;
+  type: TradeType;
+  side: TradeSide;
+  amount: number;
+  price: number;
+  total: number;
+  fees: number;
+  status: TradeStatus;
+  orderType: OrderType;
+  executedAt?: Date | null;
+  expiresAt?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface WatchlistItem {
+  id: string;
+  userId: string;
+  symbol: string;
+  type: WatchlistType;
   createdAt: Date;
 }
 
+export interface CryptoPrice {
+  id: string;
+  symbol: string;
+  price: number;
+  change24h: number;
+  volume24h: number;
+  marketCap: number;
+  high24h: number;
+  low24h: number;
+  updatedAt: Date;
+  createdAt: Date;
+}
+
+export interface LiquidityPool {
+  id: string;
+  symbol: string;
+  token0: string;
+  token1: string;
+  reserve0: number;
+  reserve1: number;
+  totalSupply: number;
+  fee: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Enums matching Prisma schema
+export enum KYCStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  REQUIRES_REVIEW = 'REQUIRES_REVIEW'
+}
+
+export enum WalletType {
+  FIAT = 'FIAT',
+  CRYPTO = 'CRYPTO',
+  STABLECOIN = 'STABLECOIN'
+}
+
+export enum DepositMethod {
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  CREDIT_CARD = 'CREDIT_CARD',
+  CRYPTO_TRANSFER = 'CRYPTO_TRANSFER',
+  STABLECOIN_TRANSFER = 'STABLECOIN_TRANSFER'
+}
+
+export enum WithdrawalMethod {
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  CRYPTO_TRANSFER = 'CRYPTO_TRANSFER',
+  STABLECOIN_TRANSFER = 'STABLECOIN_TRANSFER'
+}
+
+export enum TransactionStatus {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED'
+}
+
+export enum TradeType {
+  BUY = 'BUY',
+  SELL = 'SELL',
+  SWAP = 'SWAP'
+}
+
+export enum TradeSide {
+  LONG = 'LONG',
+  SHORT = 'SHORT'
+}
+
+export enum OrderType {
+  MARKET = 'MARKET',
+  LIMIT = 'LIMIT',
+  STOP_LOSS = 'STOP_LOSS',
+  TAKE_PROFIT = 'TAKE_PROFIT'
+}
+
+export enum TradeStatus {
+  PENDING = 'PENDING',
+  EXECUTED = 'EXECUTED',
+  CANCELLED = 'CANCELLED',
+  FAILED = 'FAILED',
+  PARTIALLY_FILLED = 'PARTIALLY_FILLED'
+}
+
+export enum WatchlistType {
+  CRYPTO = 'CRYPTO',
+  FOREX_PAIR = 'FOREX_PAIR',
+  STABLECOIN = 'STABLECOIN'
+}
+
+// Legacy interfaces for backward compatibility (will be removed gradually)
 export interface UserPosition {
   id: string;
   userId: string;

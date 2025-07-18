@@ -31,5 +31,7 @@ declare module "next-auth/jwt" {
     lastName?: string | null;
     avatar?: string | null;
     emailVerified?: Date | null;
+    isActive?: boolean;
+    kycStatus?: string;
   }
 }

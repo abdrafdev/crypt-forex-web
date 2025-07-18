@@ -135,12 +135,13 @@ interface LoginResponse {
     id: string;
     email: string;
     username: string;
-    name: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    emailVerified?: Date | null;
-    createdAt?: Date;
-    updatedAt?: Date;
+    name: string | null;        firstName?: string | null;
+        lastName?: string | null;
+        emailVerified?: Date | null;
+        isActive?: boolean;
+        kycStatus?: string;
+        createdAt?: Date;
+        updatedAt?: Date;
   };
   token?: string;
   errors?: string[];
@@ -188,6 +189,7 @@ export async function POST(req: NextRequest) {
         password: true,
         isActive: true,
         emailVerified: true,
+        kycStatus: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -226,12 +228,13 @@ export async function POST(req: NextRequest) {
           id: user.id,
           email: user.email,
           username: user.username,
-          name: user.name,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          emailVerified: user.emailVerified,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
+          name: user.name,            firstName: user.firstName,
+            lastName: user.lastName,
+            emailVerified: user.emailVerified,
+            isActive: user.isActive,
+            kycStatus: user.kycStatus,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
         },
         token,
       },

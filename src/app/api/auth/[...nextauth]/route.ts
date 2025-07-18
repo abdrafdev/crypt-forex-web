@@ -114,6 +114,8 @@ const authOptions: NextAuthOptions = {
               lastName: true,
               avatar: true,
               emailVerified: true,
+              isActive: true,
+              kycStatus: true,
             },
           });
 
@@ -124,6 +126,8 @@ const authOptions: NextAuthOptions = {
             token.lastName = dbUser.lastName;
             token.avatar = dbUser.avatar;
             token.emailVerified = dbUser.emailVerified;
+            token.isActive = dbUser.isActive;
+            token.kycStatus = dbUser.kycStatus;
           }
         }
       }

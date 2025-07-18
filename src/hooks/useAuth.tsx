@@ -12,9 +12,11 @@ interface User {
   firstName: string | null;
   lastName: string | null;
   avatar: string | null;
+  isActive: boolean;
+  emailVerified?: Date | string | null;
+  kycStatus: string;
   createdAt: Date | string;
   updatedAt: Date | string;
-  emailVerified?: Date | string | null;
 }
 
 interface AuthContextType {
@@ -97,9 +99,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
               firstName: session.user.firstName || null,
               lastName: session.user.lastName || null,
               avatar: session.user.image || null,
+              isActive: true,
+              emailVerified: session.user.emailVerified || null,
+              kycStatus: 'PENDING',
               createdAt: new Date(),
               updatedAt: new Date(),
-              emailVerified: session.user.emailVerified || null,
             };
             setUser(nextAuthUser);
           }
