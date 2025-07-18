@@ -5,6 +5,7 @@ import { ProtectedRoute } from "@/components/features/auth/protected-route";
 import MetaMaskConnect from '@/components/metamask/meta-mask-connect';
 import { useState, useEffect } from 'react';
 import { Wallet, Shield, Bell, User, ChevronRight, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
+import {DeleteDialog} from "@/components/ui/delete-dialog";
 
 
 
@@ -181,15 +182,7 @@ function AccountSettings() {
                         <ChevronRight className="w-5 h-5 text-gray-400" />
                     </button>
 
-                    <button
-                        className="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center justify-between text-red-600"
-                    >
-                        <div>
-                            <p className="font-medium">Delete My Account</p>
-                            <p className="text-sm text-red-500">Bad things happens</p>
-                        </div>
-                        <Trash2 className="w-5 h-5" />
-                    </button>
+                    <DeleteDialog />
                 </div>
             </div>
         </div>
