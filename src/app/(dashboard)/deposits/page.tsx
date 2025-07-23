@@ -5,7 +5,7 @@ import { DepositForm, DepositHistory } from '@/components/features/deposits/depo
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from "@/components/features/auth/protected-route";
 import Link from 'next/link';
-import { Settings, Wallet, AlertCircle } from 'lucide-react';
+import { Settings, Wallet, AlertCircle, RefreshCw } from 'lucide-react';
 
 // Mock data - in production this would come from your API
 const mockDeposits = [
@@ -39,7 +39,9 @@ const mockDeposits = [
 interface MetaMaskAccountDetailsProps {
     account: string;
     balance: string;
+    isLoadingBalance: boolean;
     onDisconnect: () => void;
+    onRefreshBalance: () => void;
 }
 
 interface DepositFormData {
@@ -51,7 +53,7 @@ interface DepositFormData {
 }
 
 // MetaMask Account Details Component
-function MetaMaskAccountDetails({ account, balance, onDisconnect }: MetaMaskAccountDetailsProps) {
+function MetaMaskAccountDetails({ account, balance, isLoadingBalance, onDisconnect, onRefreshBalance }: MetaMaskAccountDetailsProps) {
     const formatAddress = (address: string) => {
         if (!address) return '';
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -88,7 +90,22 @@ function MetaMaskAccountDetails({ account, balance, onDisconnect }: MetaMaskAcco
 
                 <div>
                     <label className="text-sm font-medium text-gray-500">Balance</label>
-                    <p className="text-lg font-semibold text-gray-900">{balance} ETH</p>
+                    <div className="flex items-center gap-2 mt-1">
+                        <p className="text-lg font-semibold text-gray-900">
+                            {isLoadingBalance ? 'Loading...' : `${balance} ETH`}
+                        </p>
+                        <button
+                            onClick={onRefreshBalance}
+                            disabled={isLoadingBalance}
+                            className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-50"
+                            title="Refresh balance"
+                        >
+                            <RefreshCw className={`w-4 h-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />
+                        </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                        This is your actual MetaMask balance. Click refresh to update.
+                    </p>
                 </div>
 
                 <div className="flex gap-2 pt-2">
@@ -136,17 +153,75 @@ function NoMetaMaskAccount() {
 export default function DepositsPage() {
     const [connectedAccount, setConnectedAccount] = useState('');
     const [accountBalance, setAccountBalance] = useState('0.0');
+    const [isLoadingBalance, setIsLoadingBalance] = useState(false);
     const CONTRACT_ADDRESS = "0x...";
+
+    // Function to fetch actual MetaMask balance
+    const fetchMetaMaskBalance = async (account: string) => {
+        try {
+            setIsLoadingBalance(true);
+
+            if (typeof window !== 'undefined' && window.ethereum) {
+                // Check if MetaMask is connected
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (!accounts.includes(account)) {
+                    throw new Error('Account not connected in MetaMask');
+                }
+
+                // Request balance from MetaMask
+                const balance = await window.ethereum.request({
+                    method: 'eth_getBalance',
+                    params: [account, 'latest']
+                });
+
+                // Convert from Wei to ETH (1 ETH = 10^18 Wei)
+                const balanceInEth = parseInt(balance, 16) / Math.pow(10, 18);
+                setAccountBalance(balanceInEth.toFixed(4));
+            } else {
+                throw new Error('MetaMask not found');
+            }
+        } catch (error) {
+            console.error('Error fetching balance:', error);
+            setAccountBalance('0.0000');
+            // You could show a user-friendly error message here
+        } finally {
+            setIsLoadingBalance(false);
+        }
+    };
 
     // Load saved account from localStorage on component mount
     useEffect(() => {
         const savedAccount = localStorage.getItem('metamask_account');
         if (savedAccount) {
             setConnectedAccount(savedAccount);
-            // In a real app, you'd fetch the current balance here
-            setAccountBalance('1.234'); // Mock balance
+            // Fetch the actual balance from MetaMask
+            fetchMetaMaskBalance(savedAccount);
         }
-    }, []);
+
+        // Listen for account changes in MetaMask
+        if (typeof window !== 'undefined' && window.ethereum) {
+            const handleAccountsChanged = (accounts: string[]) => {
+                if (accounts.length === 0) {
+                    // User disconnected
+                    handleAccountDisconnect();
+                } else if (accounts[0] !== connectedAccount) {
+                    // User switched accounts
+                    setConnectedAccount(accounts[0]);
+                    localStorage.setItem('metamask_account', accounts[0]);
+                    fetchMetaMaskBalance(accounts[0]);
+                }
+            };
+
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+            // Cleanup listener on unmount
+            return () => {
+                if (window.ethereum?.removeListener) {
+                    window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+                }
+            };
+        }
+    }, [connectedAccount]);
 
     const handleAccountDisconnect = () => {
         setConnectedAccount('');
@@ -154,8 +229,13 @@ export default function DepositsPage() {
         localStorage.removeItem('metamask_account');
     };
 
+    const handleRefreshBalance = () => {
+        if (connectedAccount) {
+            fetchMetaMaskBalance(connectedAccount);
+        }
+    };
+
     const handleDepositSubmit = (data: DepositFormData) => {
-        console.log('Deposit data:', data);
         // Here you would call your API to create the deposit
         alert(`Deposit request created: ${data.amount} ${data.currency}`);
     };
@@ -197,7 +277,9 @@ export default function DepositsPage() {
                             <MetaMaskAccountDetails
                                 account={connectedAccount}
                                 balance={accountBalance}
+                                isLoadingBalance={isLoadingBalance}
                                 onDisconnect={handleAccountDisconnect}
+                                onRefreshBalance={handleRefreshBalance}
                             />
                         ) : (
                             <NoMetaMaskAccount />
