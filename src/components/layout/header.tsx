@@ -1,5 +1,6 @@
 import React from 'react';
 import {Bell, Search, Menu, User, Settings, LogOut, Hand} from 'lucide-react';
+import { WalletConnectButton } from "@/components/features/wallet/WalletConnectButton";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -73,6 +74,9 @@ export function Header({ onMenuClick, className }: HeaderProps) {
 
                 {/* Right side */}
                 <div className="flex items-center space-x-4">
+                    {/* Wallet Connect */}
+                    <WalletConnectButton />
+                    
                     {/* Market Status */}
                     <div className="hidden lg:flex items-center space-x-2">
                         <div className="flex items-center space-x-1">
