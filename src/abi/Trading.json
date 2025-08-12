@@ -1,0 +1,513 @@
+[
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_currencyInfo",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "CurrencyTokenBurned",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "CurrencyTokenMinted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountBase",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "baseToken",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountQuote",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "quoteToken",
+          "type": "address"
+        }
+      ],
+      "name": "LiquidPair",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token0",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token1",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        }
+      ],
+      "name": "PairCreated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "addCurrencyToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "allPairLength",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "allPairs",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "pairAddress",
+          "type": "address"
+        }
+      ],
+      "name": "buy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currencyInfo",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "currencyTokens",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountBase",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "baseCurrency",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountQuote",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "quoteCurrency",
+          "type": "string"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "baseCurrency",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "quoteCurrency",
+          "type": "string"
+        }
+      ],
+      "name": "getLatestForexRate",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "",
+          "type": "int256"
+        },
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        }
+      ],
+      "name": "getPairDetail",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "getPairs",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountBase",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountQuote",
+          "type": "uint256"
+        }
+      ],
+      "name": "liquidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        }
+      ],
+      "name": "removeCurrencyToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "pairAddress",
+          "type": "address"
+        }
+      ],
+      "name": "sell",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "userPairs",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]

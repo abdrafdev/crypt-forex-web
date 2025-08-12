@@ -1,0 +1,280 @@
+[
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "initialOwner",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "currencyCode",
+          "type": "string"
+        }
+      ],
+      "name": "CurrencyCodeAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "currencyCode",
+          "type": "string"
+        }
+      ],
+      "name": "CurrencyCodeRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "rateAddress",
+          "type": "address"
+        }
+      ],
+      "name": "CurrencyPairAddressAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "rateAddress",
+          "type": "address"
+        }
+      ],
+      "name": "CurrencyPairAddressRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currencyCode",
+          "type": "string"
+        }
+      ],
+      "name": "addCurrencyCode",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "rateAddress",
+          "type": "address"
+        }
+      ],
+      "name": "addForexPairRateAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        }
+      ],
+      "name": "getForexPairRateAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "baseCurrency",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "quoteCurrency",
+          "type": "string"
+        }
+      ],
+      "name": "getLatestForexRate",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "",
+          "type": "int256"
+        },
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currencyCode",
+          "type": "string"
+        }
+      ],
+      "name": "isValidCurrency",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currencyCode",
+          "type": "string"
+        }
+      ],
+      "name": "removeCurrencyCode",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "rateAddress",
+          "type": "address"
+        }
+      ],
+      "name": "removeForexPairRateAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
