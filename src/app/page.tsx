@@ -6,26 +6,6 @@ import { TrendingUp, Wallet, Coins, BarChart3, ArrowRight } from "lucide-react";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">ForexFX</span>
-            </div>
-            <Link href="/dashboard">
-              <Button>
-                Enter Platform
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">

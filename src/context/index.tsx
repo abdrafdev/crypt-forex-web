@@ -19,8 +19,8 @@ if (!projectId) {
 // Set up metadata
 const metadata = {
   name: 'crypto-fx',
-  description: 'AppKit Example',
-  url: 'https://reown.com/appkit', // origin must match your domain & subdomain
+  description: 'Crypto Forex Platform',
+  url: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://reown.com/appkit', // origin must match your domain & subdomain
   icons: ['https://assets.reown.com/reown-profile-pic.png']
 }
 
@@ -34,7 +34,7 @@ const modal = createAppKit({
   features: {
     email: false,
     socials: [],
-    analytics: true, // Optional - defaults to your Cloud configuration
+    analytics: false, // Disabled to prevent Coinbase analytics errors in development
   }
 })
 
